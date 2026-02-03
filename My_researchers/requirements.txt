@@ -1,0 +1,6 @@
+mcp
+python-dotenv
+requests
+uvicorn
+fastapi
+notebooklm-py

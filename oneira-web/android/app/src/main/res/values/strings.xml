@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Oneira</string>
+    <string name="title_activity_main">Oneira</string>
+    <string name="package_name">com.oneira.fortune</string>
+    <string name="custom_url_scheme">com.oneira.fortune</string>
+</resources>

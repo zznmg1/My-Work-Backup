@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Cache-Control Meta Tags -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Premium Todo & Calendar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=1.0.6">
+</head>
+
+<body>
+    <div id="app-root">
+        <!-- Background Blobs -->
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+
+        <div class="main-wrapper">
+            <!-- Calendar Card -->
+            <div class="calendar-card">
+                <div class="calendar-header">
+                    <button id="prev-month">&lt;</button>
+                    <h2 id="current-month-year">2026년 1월</h2>
+                    <button id="next-month">&gt;</button>
+                </div>
+                <div class="calendar-weekdays">
+                    <div>일</div>
+                    <div>월</div>
+                    <div>화</div>
+                    <div>수</div>
+                    <div>목</div>
+                    <div>금</div>
+                    <div>토</div>
+                </div>
+                <div id="calendar-days" class="calendar-days"></div>
+            </div>
+
+            <div class="todo-card">
+                <header>
+                    <div class="header-top">
+                        <h1>My Daily Tasks</h1>
+                        <span id="cloud-status" class="status-offline">Connecting...</span>
+                    </div>
+                    <p id="date-display">로딩 중...</p>
+                </header>
+
+                <div class="input-section">
+                    <input type="text" id="todo-input" placeholder="새로운 할 일을 입력하세요..." autocomplete="off">
+                    <button id="add-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </button>
+                </div>
+
+                <ul id="todo-list" class="todo-list">
+                    <!-- 투두 아이템들이 여기에 추가됩니다 -->
+                </ul>
+
+                <div class="todo-footer">
+                    <span id="items-left">0 items left</span>
+                    <button id="refresh-btn"
+                        style="background:none; border:none; color:var(--text-secondary); cursor:pointer; font-size:0.8rem;">🔄
+                        강제 동기화</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="script.js?v=1.0.6"></script>
+</body>
+
+</html>

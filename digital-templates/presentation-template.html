@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, initial-scale=1.0">
+    <title>프레젠테이션 템플릿 - SaaS Pitch Deck</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0f0f1a;
+            padding: 40px;
+        }
+
+        .slides-container {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .slide {
+            width: 1280px;
+            height: 720px;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 슬라이드 1: 타이틀 */
+        .slide-1 {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            display: flex;
+            align-items: center;
+            padding: 80px;
+            color: white;
+        }
+
+        .slide-1 .bg-shape {
+            position: absolute;
+            right: -200px;
+            top: -200px;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, transparent 60%);
+        }
+
+        .slide-1 .bg-shape-2 {
+            position: absolute;
+            left: 50%;
+            bottom: -300px;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.2) 0%, transparent 60%);
+        }
+
+        .slide-1 .content {
+            position: relative;
+            z-index: 1;
+            max-width: 700px;
+        }
+
+        .slide-1 .logo {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 60px;
+            background: linear-gradient(90deg, #6366f1, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .slide-1 h1 {
+            font-size: 64px;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 24px;
+        }
+
+        .slide-1 h1 span {
+            background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .slide-1 p {
+            font-size: 22px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+        }
+
+        .slide-1 .visual {
+            position: absolute;
+            right: 80px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            border-radius: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 120px;
+        }
+
+        /* 슬라이드 2: 문제 정의 */
+        .slide-2 {
+            background: #ffffff;
+            padding: 80px;
+            color: #1a1a2e;
+        }
+
+        .slide-2 .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 60px;
+        }
+
+        .slide-2 .section-tag {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            color: #dc2626;
+            padding: 8px 20px;
+            border-radius: 100px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .slide-2 .page-num {
+            font-size: 16px;
+            color: #94a3b8;
+        }
+
+        .slide-2 h2 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 60px;
+        }
+
+        .slide-2 h2 span {
+            color: #dc2626;
+        }
+
+        .slide-2 .problems {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+
+        .slide-2 .problem-card {
+            background: #f8fafc;
+            padding: 40px;
+            border-radius: 16px;
+            border-left: 4px solid #dc2626;
+        }
+
+        .slide-2 .problem-icon {
+            font-size: 40px;
+            margin-bottom: 20px;
+        }
+
+        .slide-2 .problem-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .slide-2 .problem-desc {
+            font-size: 15px;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        /* 슬라이드 3: 솔루션 */
+        .slide-3 {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            padding: 80px;
+            color: white;
+        }
+
+        .slide-3 .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 60px;
+        }
+
+        .slide-3 .section-tag {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 100px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .slide-3 .page-num {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .slide-3 h2 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 60px;
+        }
+
+        .slide-3 .solutions {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+
+        .slide-3 .solution-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 16px;
+            backdrop-filter: blur(20px);
+        }
+
+        .slide-3 .solution-icon {
+            width: 56px;
+            height: 56px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 24px;
+        }
+
+        .slide-3 .solution-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .slide-3 .solution-desc {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+        }
+
+        /* 슬라이드 4: 가격 */
+        .slide-4 {
+            background: #ffffff;
+            padding: 80px;
+            color: #1a1a2e;
+        }
+
+        .slide-4 .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .slide-4 .section-tag {
+            display: inline-block;
+            background: linear-gradient(135deg, #ddd6fe, #c4b5fd);
+            color: #6366f1;
+            padding: 8px 20px;
+            border-radius: 100px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .slide-4 h2 {
+            font-size: 48px;
+            font-weight: 700;
+        }
+
+        .slide-4 .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .slide-4 .pricing-card {
+            background: #f8fafc;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .slide-4 .pricing-card.featured {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .slide-4 .plan-name {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .slide-4 .price {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 24px;
+        }
+
+        .slide-4 .price span {
+            font-size: 18px;
+            font-weight: 400;
+        }
+
+        .slide-4 .features {
+            text-align: left;
+            margin-bottom: 32px;
+        }
+
+        .slide-4 .feature {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            font-size: 15px;
+        }
+
+        .slide-4 .cta-btn {
+            display: inline-block;
+            padding: 14px 32px;
+            border-radius: 100px;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .slide-4 .pricing-card:not(.featured) .cta-btn {
+            background: #1a1a2e;
+            color: white;
+        }
+
+        .slide-4 .pricing-card.featured .cta-btn {
+            background: white;
+            color: #6366f1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slides-container">
+        <!-- 슬라이드 1: 타이틀 -->
+        <div class="slide slide-1">
+            <div class="bg-shape"></div>
+            <div class="bg-shape-2"></div>
+            <div class="content">
+                <div class="logo">YourBrand</div>
+                <h1>비즈니스의 미래를<br><span>함께 만들어갑니다</span></h1>
+                <p>AI 기반 자동화 솔루션으로<br>업무 효율을 10배 높이세요</p>
+            </div>
+            <div class="visual">🚀</div>
+        </div>
+
+        <!-- 슬라이드 2: 문제 -->
+        <div class="slide slide-2">
+            <div class="header">
+                <div class="section-tag">🔴 Problem</div>
+                <div class="page-num">02 / 04</div>
+            </div>
+            <h2>기업들이 겪는 <span>3가지 문제</span></h2>
+            <div class="problems">
+                <div class="problem-card">
+                    <div class="problem-icon">⏰</div>
+                    <div class="problem-title">반복 업무에 낭비되는 시간</div>
+                    <div class="problem-desc">직원들이 하루 평균 4시간을 단순 반복 업무에 소비하고 있습니다.</div>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon">📊</div>
+                    <div class="problem-title">데이터 분석의 어려움</div>
+                    <div class="problem-desc">의사결정에 필요한 데이터를 수집하고 분석하는 데 너무 많은 리소스가 필요합니다.</div>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon">💰</div>
+                    <div class="problem-title">높은 운영 비용</div>
+                    <div class="problem-desc">비효율적인 프로세스로 인해 불필요한 인건비와 시간 비용이 발생합니다.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 슬라이드 3: 솔루션 -->
+        <div class="slide slide-3">
+            <div class="header">
+                <div class="section-tag">✨ Solution</div>
+                <div class="page-num">03 / 04</div>
+            </div>
+            <h2>우리의 해결책</h2>
+            <div class="solutions">
+                <div class="solution-card">
+                    <div class="solution-icon">🤖</div>
+                    <div class="solution-title">AI 업무 자동화</div>
+                    <div class="solution-desc">반복적인 업무를 AI가 자동으로 처리하여 직원들이 창의적인 업무에 집중할 수 있습니다.</div>
+                </div>
+                <div class="solution-card">
+                    <div class="solution-icon">📈</div>
+                    <div class="solution-title">실시간 데이터 분석</div>
+                    <div class="solution-desc">복잡한 데이터를 자동으로 수집하고 인사이트를 제공하여 빠른 의사결정을 돕습니다.</div>
+                </div>
+                <div class="solution-card">
+                    <div class="solution-icon">💎</div>
+                    <div class="solution-title">비용 최적화</div>
+                    <div class="solution-desc">프로세스 최적화를 통해 평균 40% 이상의 운영 비용 절감을 실현합니다.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 슬라이드 4: 가격 -->
+        <div class="slide slide-4">
+            <div class="header">
+                <div class="section-tag">💳 Pricing</div>
+                <h2>합리적인 가격 정책</h2>
+            </div>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <div class="plan-name">Starter</div>
+                    <div class="price">₩29,000<span>/월</span></div>
+                    <div class="features">
+                        <div class="feature">✓ 기본 자동화 기능</div>
+                        <div class="feature">✓ 5개 워크플로우</div>
+                        <div class="feature">✓ 이메일 지원</div>
+                    </div>
+                    <a href="#" class="cta-btn">시작하기</a>
+                </div>
+                <div class="pricing-card featured">
+                    <div class="plan-name">Pro</div>
+                    <div class="price">₩79,000<span>/월</span></div>
+                    <div class="features">
+                        <div class="feature">✓ 고급 자동화 기능</div>
+                        <div class="feature">✓ 무제한 워크플로우</div>
+                        <div class="feature">✓ 우선 지원</div>
+                        <div class="feature">✓ API 액세스</div>
+                    </div>
+                    <a href="#" class="cta-btn">추천</a>
+                </div>
+                <div class="pricing-card">
+                    <div class="plan-name">Enterprise</div>
+                    <div class="price">문의<span></span></div>
+                    <div class="features">
+                        <div class="feature">✓ Pro 모든 기능</div>
+                        <div class="feature">✓ 전담 매니저</div>
+                        <div class="feature">✓ 맞춤 교육</div>
+                        <div class="feature">✓ SLA 보장</div>
+                    </div>
+                    <a href="#" class="cta-btn">문의하기</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

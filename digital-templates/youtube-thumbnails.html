@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1280, initial-scale=1.0">
+    <title>YouTube 썸네일 템플릿</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #1a1a2e;
+            min-height: 100vh;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+        }
+
+        h1 {
+            color: white;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .thumbnail {
+            width: 1280px;
+            height: 720px;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 썸네일 1: 충격적인 뉴스 스타일 */
+        .thumb-1 {
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 100%);
+            display: flex;
+            align-items: center;
+            padding: 60px;
+        }
+
+        .thumb-1 .left {
+            flex: 1;
+        }
+
+        .thumb-1 .badge {
+            display: inline-block;
+            background: #ef4444;
+            color: white;
+            padding: 12px 24px;
+            font-size: 18px;
+            font-weight: 800;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        .thumb-1 h2 {
+            font-size: 72px;
+            font-weight: 900;
+            color: white;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+
+        .thumb-1 h2 span {
+            color: #fbbf24;
+        }
+
+        .thumb-1 .subtitle {
+            font-size: 28px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .thumb-1 .right {
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 200px;
+            position: relative;
+        }
+
+        .thumb-1 .right::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
+            border-radius: 28px;
+            z-index: -1;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* 썸네일 2: 비교 스타일 */
+        .thumb-2 {
+            display: flex;
+        }
+
+        .thumb-2 .side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px;
+            position: relative;
+        }
+
+        .thumb-2 .left-side {
+            background: linear-gradient(180deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+        }
+
+        .thumb-2 .right-side {
+            background: linear-gradient(180deg, #16a34a 0%, #15803d 100%);
+            color: white;
+        }
+
+        .thumb-2 .vs {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            background: #fbbf24;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: 900;
+            color: #0f0f1a;
+            z-index: 10;
+            border: 6px solid #0f0f1a;
+        }
+
+        .thumb-2 .icon {
+            font-size: 120px;
+            margin-bottom: 32px;
+        }
+
+        .thumb-2 h3 {
+            font-size: 48px;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        /* 썸네일 3: 숫자 강조 스타일 */
+        .thumb-3 {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            display: flex;
+            align-items: center;
+            padding: 60px;
+            color: #0f0f1a;
+        }
+
+        .thumb-3 .number-box {
+            width: 400px;
+            height: 400px;
+            background: #0f0f1a;
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-right: 60px;
+        }
+
+        .thumb-3 .big-number {
+            font-size: 180px;
+            font-weight: 900;
+            color: #fbbf24;
+            line-height: 1;
+        }
+
+        .thumb-3 .unit {
+            font-size: 48px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .thumb-3 .content h2 {
+            font-size: 64px;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .thumb-3 .content p {
+            font-size: 28px;
+            opacity: 0.8;
+        }
+
+        /* 썸네일 4: 리스트 스타일 */
+        .thumb-4 {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            padding: 60px;
+            color: white;
+        }
+
+        .thumb-4 .header {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .thumb-4 .emoji {
+            font-size: 80px;
+        }
+
+        .thumb-4 h2 {
+            font-size: 56px;
+            font-weight: 800;
+        }
+
+        .thumb-4 h2 span {
+            color: #fbbf24;
+        }
+
+        .thumb-4 .list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        .thumb-4 .item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 28px;
+            border-radius: 16px;
+            border-left: 4px solid;
+        }
+
+        .thumb-4 .item:nth-child(1) {
+            border-color: #ef4444;
+        }
+
+        .thumb-4 .item:nth-child(2) {
+            border-color: #f59e0b;
+        }
+
+        .thumb-4 .item:nth-child(3) {
+            border-color: #10b981;
+        }
+
+        .thumb-4 .item:nth-child(4) {
+            border-color: #6366f1;
+        }
+
+        .thumb-4 .item-num {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .thumb-4 .item-text {
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        /* 썸네일 5: 질문형 스타일 */
+        .thumb-5 {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .thumb-5::before {
+            content: '?';
+            position: absolute;
+            font-size: 600px;
+            font-weight: 900;
+            opacity: 0.1;
+            right: -100px;
+            bottom: -100px;
+        }
+
+        .thumb-5 .content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .thumb-5 h2 {
+            font-size: 84px;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 32px;
+        }
+
+        .thumb-5 .cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 16px;
+            background: white;
+            color: #6366f1;
+            padding: 20px 48px;
+            border-radius: 100px;
+            font-size: 32px;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🎬 YouTube 썸네일 템플릿 (1280x720)</h1>
+
+    <!-- 썸네일 1: 충격적인 뉴스 -->
+    <div class="thumbnail thumb-1">
+        <div class="left">
+            <div class="badge">🔥 긴급</div>
+            <h2>이것 모르면<br><span>손해봅니다</span></h2>
+            <div class="subtitle">2026년 필수 정보</div>
+        </div>
+        <div class="right">💡</div>
+    </div>
+
+    <!-- 썸네일 2: 비교 -->
+    <div class="thumbnail thumb-2">
+        <div class="side left-side">
+            <div class="icon">❌</div>
+            <h3>기존 방식</h3>
+        </div>
+        <div class="vs">VS</div>
+        <div class="side right-side">
+            <div class="icon">✅</div>
+            <h3>새로운 방식</h3>
+        </div>
+    </div>
+
+    <!-- 썸네일 3: 숫자 강조 -->
+    <div class="thumbnail thumb-3">
+        <div class="number-box">
+            <div class="big-number">10</div>
+            <div class="unit">배</div>
+        </div>
+        <div class="content">
+            <h2>생산성을<br>높이는 방법</h2>
+            <p>이 영상 하나로 끝</p>
+        </div>
+    </div>
+
+    <!-- 썸네일 4: 리스트 -->
+    <div class="thumbnail thumb-4">
+        <div class="header">
+            <div class="emoji">📋</div>
+            <h2>꼭 알아야 할 <span>4가지</span></h2>
+        </div>
+        <div class="list">
+            <div class="item">
+                <div class="item-num">1</div>
+                <div class="item-text">첫 번째 핵심 포인트</div>
+            </div>
+            <div class="item">
+                <div class="item-num">2</div>
+                <div class="item-text">두 번째 중요 내용</div>
+            </div>
+            <div class="item">
+                <div class="item-num">3</div>
+                <div class="item-text">세 번째 필수 정보</div>
+            </div>
+            <div class="item">
+                <div class="item-num">4</div>
+                <div class="item-text">네 번째 꿀팁</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 썸네일 5: 질문형 -->
+    <div class="thumbnail thumb-5">
+        <div class="content">
+            <h2>아직도 이렇게<br>하고 계신가요?</h2>
+            <div class="cta">정답 보기 →</div>
+        </div>
+    </div>
+</body>
+
+</html>

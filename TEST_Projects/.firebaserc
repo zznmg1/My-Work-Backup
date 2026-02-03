@@ -1,0 +1,18 @@
+{
+  "projects": {
+    "default": "to-do-list-fcee4"
+  },
+  "targets": {
+    "to-do-list-fcee4": {
+      "hosting": {
+        "tetris": [
+          "tedduriddu"
+        ],
+        "todo": [
+          "to-do-list-fcee4"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

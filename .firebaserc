@@ -1,0 +1,13 @@
+{
+  "projects": {},
+  "targets": {
+    "to-do-list-fcee4": {
+      "hosting": {
+        "tetris": [
+          "tedduriddu"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

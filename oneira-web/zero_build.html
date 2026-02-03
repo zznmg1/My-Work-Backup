@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oneira: 2026 Daily Fortune</title>
+
+    <!-- Tailwind CSS (Observer Mode) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#ff0084",
+                        background: {
+                            light: "#f8f5f7",
+                            dark: "#050510", // Deep cosmic
+                            card: "#1a0b12",
+                        },
+                        cosmic: {
+                            purple: "#8b5cf6",
+                            cyan: "#06b6d4",
+                            pink: "#ec4899",
+                            deep: "#230f19"
+                        },
+                        accent: "#ce8dae"
+                    },
+                    fontFamily: {
+                        serif: ['"Tenor Sans"', 'serif'],
+                        sans: ['"Manrope"', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'spin-slow': 'spin 12s linear infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts (Tenor Sans + Manrope) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Tenor+Sans&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles from index.css (Cleaned for Browser) -->
+    <style>
+        /* Removed @tailwind directives - CDN handles this automatically */
+
+        body {
+            background-color: #050510;
+            color: white;
+            margin: 0;
+            font-family: 'Manrope', sans-serif;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #050205;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #FF0084;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+
+    <!-- DEBUG LOGGER SCRIPT -->
+    <script>
+        window.onerror = function (msg, url, line, col, error) {
+            const overlay = document.getElementById('debug-overlay');
+            if (overlay) {
+                overlay.innerHTML += `<div class="log-error">🚫 ERROR: ${msg} (Line ${line})</div>`;
+                overlay.scrollTop = overlay.scrollHeight;
+                overlay.style.pointerEvents = 'auto'; // Enable scrolling if error
+            }
+            console.error("Global Error:", msg, error);
+            return false;
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const overlay = document.createElement('div');
+            overlay.id = 'debug-overlay';
+            overlay.innerHTML = '<div class="log-success">✅ System Initialized. Waiting for App...</div>';
+            document.body.appendChild(overlay);
+        });
+
+        // Capture Console Logs
+        const originalLog = console.log;
+        console.log = function (...args) {
+            const overlay = document.getElementById('debug-overlay');
+            if (overlay) {
+                overlay.innerHTML += `<div>ℹ️ ${args.join(' ')}</div>`;
+                overlay.scrollTop = overlay.scrollHeight;
+            }
+            originalLog.apply(console, args);
+        };
+    </script>
+
+    <!-- Import Map for Modules -->
+    <script type="importmap">
+    {
+        "imports": {
+            "react": "https://esm.sh/react@18.2.0",
+            "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+            "framer-motion": "https://esm.sh/framer-motion@10.16.4",
+            "lucide-react": "https://esm.sh/lucide-react@0.292.0"
+        }
+    }
+    </script>
+
+    <!-- Babel for in-browser compilation (Updated CDN) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <!-- MAIN APPLICATION SCRIPT -->
+    <script type="text/babel" data-type="module" data-presets="react">
+        console.log("🚀 Starting Zero-Build Application...");
+        import React, { useState, useEffect, useRef } from 'react';
+        import { createRoot } from 'react-dom/client';
+        import { motion, AnimatePresence } from 'framer-motion';
+        import * as LucideIcons from 'lucide-react';
+
+        // Destructure Icons globally for pasted code compatibility
+        const {
+            Moon, Sparkles, Ghost, ChevronDown, Search, Heart, Sun, Eye, Award,
+            Scale, Wind, Droplets, LayoutGrid, Settings, ArrowLeft, ArrowRight,
+            Loader2, Zap, Stars, MoreHorizontal, User, Send,
+            Image: ImageIcon
+        } = LucideIcons;
+
+        // --- TYPES (types.ts) ---
+        // Converted Enum to Object for runtime
+        const Screen = {
+            LANDING: 'LANDING',
+            SELECTION: 'SELECTION',
+            INPUT: 'INPUT',
+            RESULT: 'RESULT',
+            HISTORY: 'HISTORY'
+        };
+
+        // --- COMPONENTS ---
+
+        // Background.tsx
+        const Background = () => {
+            return (
+                <div className="fixed inset-0 w-full h-full overflow-hidden pointer-events-none -z-10 bg-[#050205]">
+                    <div className="absolute inset-0 bg-[#050205]" />
+                    <div className="absolute -top-[20%] -left-[10%] w-[60vw] h-[60vw] bg-pink-500/10 rounded-full blur-[120px] mix-blend-screen animate-pulse-slow" />
+                    <div className="absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] bg-purple-900/20 rounded-full blur-[120px] mix-blend-screen" />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-pink-500/5 rounded-full blur-[100px] opacity-50" />
+                    <div
+                        className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                        style={{
+                            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
+                        }}
+                    />
+                </div>
+            );
+        };
+
+        // SplashScreen.tsx
+        function SplashScreen({ onComplete }) {
+            const [progress, setProgress] = useState(0)
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    setProgress(prev => {
+                        if (prev >= 100) {
+                            clearInterval(interval)
+                            return 100
+                        }
+                        return prev + 2
+                    })
+                }, 40)
+                const timeout = setTimeout(() => {
+                    onComplete()
+                }, 2800)
+                return () => {
+                    clearInterval(interval)
+                    clearTimeout(timeout)
+                }
+            }, [onComplete])
+
+            return (
+                <motion.div
+                    initial={{ opacity: 1 }}
+                    exit={{ opacity: 0, transition: { duration: 0.8, ease: "easeInOut" } }}
+                    style={{
+                        position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+                        background: '#030303', zIndex: 9999, display: 'flex', flexDirection: 'column',
+                        alignItems: 'center', justifyContent: 'center', color: '#D4AF37'
+                    }}
+                >
+                    <div
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ duration: 1.5, ease: "easeOut" }}
+                        style={{ marginBottom: '40px', textAlign: 'center' }}
+                    >
+                        <h1 style={{ fontSize: '3rem', fontFamily: "'Tenor Sans', serif", letterSpacing: '5px', marginBottom: '10px' }}>
+                            DESTINY
+                        </h1>
+                        <p style={{ fontFamily: "'Manrope', sans-serif", fontSize: '0.8rem', letterSpacing: '4px', opacity: 0.6, textTransform: 'uppercase' }}>
+                            Reveal Your Fate
+                        </p>
+                    </div>
+                    <div style={{ width: '120px', height: '2px', background: '#222', borderRadius: '2px', overflow: 'hidden' }}>
+                        <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${progress}%` }}
+                            style={{ height: '100%', background: '#D4AF37' }}
+                        />
+                    </div>
+                    <motion.span
+                        animate={{ opacity: [0.3, 1, 0.3] }}
+                        transition={{ repeat: Infinity, duration: 2 }}
+                        style={{ marginTop: '20px', fontSize: '10px', opacity: 0.5, letterSpacing: '2px' }}
+                    >
+                        {progress}%
+                    </motion.span>
+                </motion.div>
+            )
+        }
+
+        // FateCard.tsx
+        function FateCard({ type, content, subContent, rarity, date, hasImage, onUnlockImage }) {
+            const getIcon = () => {
+                switch (type) {
+                    case 'DREAM': return <Moon size={14} color="#C5A3FF" />
+                    case 'FORTUNE': return <Sparkles size={14} color="#FFD700" />
+                    case 'SAJU': return <Sun size={14} color="#FF4500" />
+                }
+            }
+            const getTypeLabel = () => {
+                switch (type) {
+                    case 'DREAM': return 'Dream Fragment'
+                    case 'FORTUNE': return 'Daily Fortune'
+                    case 'SAJU': return 'Destiny Reading'
+                }
+            }
+            const getGradient = () => {
+                if (hasImage) return 'linear-gradient(to bottom, #2a2a40, #1a1a2e)'
+                if (type === 'DREAM') return 'linear-gradient(to bottom, #1a1a2e, #111)'
+                if (type === 'FORTUNE') return 'linear-gradient(to bottom, #2e2a1a, #1a1500)'
+                if (type === 'SAJU') return 'linear-gradient(to bottom, #2e1a1a, #1a0000)'
+                return '#222'
+            }
+
+            return (
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    layout
+                    style={{
+                        background: 'var(--color-card-bg)', borderRadius: 'var(--radius-card)', padding: '20px', marginBottom: '20px', position: 'relative',
+                        border: rarity === 'LEGEND' ? '1px solid rgba(255, 215, 0, 0.3)' : '1px solid rgba(255,255,255,0.05)'
+                    }}
+                >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                        <div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                                {getIcon()}
+                                <span style={{ fontSize: '12px', color: 'var(--color-text-dim)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{getTypeLabel()} • {date}</span>
+                            </div>
+                            <h3 style={{ fontSize: '17px', fontWeight: 600, color: 'white', lineHeight: '1.4' }}>
+                                {subContent || (content.length > 20 ? content.substring(0, 20) + "..." : content)}
+                            </h3>
+                        </div>
+                        <MoreHorizontal size={20} color="#444" />
+                    </div>
+                    <p style={{ fontSize: '14px', marginBottom: '16px', color: '#ccc', lineHeight: '1.6' }}>{content}</p>
+                    <div style={{ width: '100%', height: '180px', background: getGradient(), borderRadius: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
+                        {hasImage ? (
+                            <>
+                                <span style={{ fontSize: '50px' }}>🌌</span>
+                                {rarity === 'LEGEND' && <div style={{ position: 'absolute', bottom: '10px', right: '10px', background: 'gold', color: 'black', fontSize: '10px', padding: '2px 8px', borderRadius: '4px', fontWeight: 'bold' }}>LEGENDARY</div>}
+                            </>
+                        ) : (
+                            <div onClick={onUnlockImage} style={{ textAlign: 'center', cursor: 'pointer', opacity: 0.8 }}>
+                                <ImageIcon size={32} color="rgba(255,255,255,0.5)" style={{ marginBottom: '10px' }} />
+                                <p style={{ fontSize: '13px', marginBottom: '8px', color: '#fff' }}>Visualize Destiny</p>
+                                <button style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '8px 16px', borderRadius: '20px', fontSize: '12px', fontWeight: 600, border: '1px solid rgba(255,255,255,0.2)' }}>Watch Ad to Generate</button>
+                            </div>
+                        )}
+                    </div>
+                </motion.div>
+            )
+        }
+
+        // FateInput.tsx
+        function FateInput({ type, onSubmit, isAnalyzing }) {
+            const [text, setText] = useState('')
+            useEffect(() => { setText('') }, [type])
+            const handleSubmit = () => {
+                if (!text.trim() && (type === 'DREAM' || type === 'SOUL')) return
+                if (type === 'DREAM') onSubmit(text)
+                else if (type === 'SOUL') onSubmit(text, "Soul Reflection")
+                else onSubmit("Daily Fortune Forecast")
+                setText('')
+            }
+            return (
+                <div style={{ width: '100%', padding: '10px' }}>
+                    {type === 'DREAM' && (
+                        <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Tell me about your dream..." disabled={isAnalyzing} style={{ width: '100%', height: '120px', background: '#111', border: '1px solid #333', color: '#fff', padding: '15px', marginBottom: '20px', borderRadius: '8px', outline: 'none' }} />
+                    )}
+                    {type === 'SOUL' && (
+                        <div style={{ marginBottom: '20px' }}>
+                            <input type="text" maxLength={20} value={text} onChange={(e) => setText(e.target.value)} placeholder="Current mood? (Max 20)" disabled={isAnalyzing} style={{ width: '100%', background: 'transparent', color: '#fff', border: 'none', borderBottom: '2px solid #C5A3FF', padding: '10px', fontSize: '18px', textAlign: 'center', outline: 'none' }} />
+                            <div style={{ textAlign: 'center', fontSize: '10px', opacity: 0.5, marginTop: '5px' }}>{text.length} / 20</div>
+                        </div>
+                    )}
+                    <button onClick={handleSubmit} disabled={isAnalyzing || (!text.trim() && (type === 'DREAM' || type === 'SOUL'))} style={{ width: '100%', padding: '15px', background: '#fff', color: '#000', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '16px', cursor: isAnalyzing ? 'not-allowed' : 'pointer', opacity: isAnalyzing ? 0.5 : 1 }}>
+                        {isAnalyzing ? 'ANALYZING...' : (type === 'DREAM' ? 'INTERPRET DREAM' : type === 'FORTUNE' ? 'OPEN ORACLE' : 'READ SOUL')}
+                    </button>
+                </div>
+            )
+        }
+
+        // --- SCREENS ---
+
+        // LandingScreen.tsx
+        const LandingScreen = ({ onNavigate }) => {
+            return (
+                <div className="flex flex-col items-center justify-center min-h-screen px-6 py-12 relative animate-fade-in content-center">
+                    <div className="flex items-center justify-center gap-8 md:gap-12 mb-16">
+                        <button className="group flex flex-col items-center">
+                            <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center backdrop-blur-md transition-all duration-500 group-hover:border-primary/50 group-hover:shadow-[0_0_30px_rgba(255,0,132,0.3)]">
+                                <Moon className="w-6 h-6 text-white/80 group-hover:text-white transition-colors" />
+                            </div>
+                        </button>
+                        <button onClick={() => onNavigate(Screen.SELECTION)} className="group flex flex-col items-center -mt-6">
+                            <div className="w-24 h-24 rounded-full bg-white/10 border border-white/20 flex items-center justify-center shadow-[0_0_30px_rgba(255,0,132,0.25)] backdrop-blur-xl transition-all duration-500 group-hover:bg-primary/20 group-hover:shadow-[0_0_50px_rgba(255,0,132,0.5)] group-hover:scale-110">
+                                <Sparkles className="w-10 h-10 text-primary drop-shadow-[0_0_8px_rgba(255,0,132,0.8)]" />
+                            </div>
+                        </button>
+                        <button onClick={() => onNavigate(Screen.HISTORY)} className="group flex flex-col items-center">
+                            <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center backdrop-blur-md transition-all duration-500 group-hover:border-primary/50 group-hover:shadow-[0_0_30px_rgba(255,0,132,0.3)]">
+                                <Ghost className="w-6 h-6 text-white/80 group-hover:text-white transition-colors" />
+                            </div>
+                        </button>
+                    </div>
+                    <div className="flex flex-col items-center text-center space-y-8">
+                        <h1 className="font-serif text-5xl md:text-6xl font-normal leading-tight tracking-[0.1em] text-white drop-shadow-xl">
+                            2026<br />DAILY<br />FORTUNE
+                        </h1>
+                        <div className="w-px h-16 bg-gradient-to-b from-transparent via-primary/60 to-transparent" />
+                        <p className="text-accent text-xs font-bold tracking-[0.3em] uppercase opacity-70">Mystic Fortune AI</p>
+                    </div>
+                    <div className="absolute bottom-10 left-0 w-full flex justify-center opacity-30 animate-bounce">
+                        <ChevronDown className="w-8 h-8 text-white" />
+                    </div>
+                </div>
+            );
+        };
+
+        // SelectionScreen.tsx
+        const SelectionCard = ({ color, title, subtitle, icon, onClick }) => {
+            const colorMap = {
+                purple: { border: 'border-cosmic-purple', text: 'text-cosmic-purple', shadow: 'hover:shadow-cosmic-purple/40', bg: 'bg-cosmic-purple/5' },
+                cyan: { border: 'border-cosmic-cyan', text: 'text-cosmic-cyan', shadow: 'hover:shadow-cosmic-cyan/40', bg: 'bg-cosmic-cyan/5' },
+                pink: { border: 'border-cosmic-pink', text: 'text-cosmic-pink', shadow: 'hover:shadow-cosmic-pink/40', bg: 'bg-cosmic-pink/5' },
+            };
+            const c = colorMap[color];
+            return (
+                <div onClick={onClick} className={`group relative flex-1 cursor-pointer transition-all duration-500 hover:-translate-y-2 h-[200px] sm:h-full`}>
+                    <div className={`relative h-full w-full rounded-2xl border ${c.border}/30 bg-[#0a0510] shadow-lg ${c.shadow} hover:border-${color}-500 transition-all duration-300 overflow-hidden flex flex-col items-center`}>
+                        <div className={`absolute inset-0 bg-gradient-to-b from-transparent via-${color}-500/5 to-${color}-500/10 opacity-50`} />
+                        <div className="flex-1 w-full flex items-center justify-center relative p-4">
+                            <div className={`w-20 h-20 sm:w-24 sm:h-36 rounded-full sm:rounded-none sm:border sm:${c.border}/60 flex items-center justify-center ${c.bg} relative`}>
+                                <div className="drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">{icon}</div>
+                            </div>
+                        </div>
+                        <div className={`w-full pb-6 pt-2 text-center relative z-10 bg-gradient-to-t from-${color}-900/20 to-transparent`}>
+                            <div className={`w-8 h-px ${c.bg.replace('5', '50')} mx-auto mb-3`} />
+                            <p className={`${c.text} text-sm font-serif tracking-[0.15em] uppercase font-bold group-hover:text-white transition-colors`}>{title}</p>
+                            <p className="text-[10px] text-white/30 font-mono mt-1 group-hover:text-white/50">{subtitle}</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const SelectionScreen = ({ onNavigate, onSelectType }) => {
+            const handleCardClick = (type) => { onSelectType(type); onNavigate(Screen.INPUT); };
+            return (
+                <div className="flex flex-col h-screen max-h-[900px] w-full max-w-[600px] mx-auto bg-background-dark/80 backdrop-blur-md shadow-2xl overflow-hidden relative border-x border-white/5">
+                    <header className="flex items-center justify-between px-6 py-6 border-b border-white/5 bg-background-dark/50 backdrop-blur-md z-30">
+                        <div className="flex items-center gap-3 cursor-pointer" onClick={() => onNavigate(Screen.LANDING)}>
+                            <div className="w-8 h-8 flex items-center justify-center rounded-full bg-primary/10 text-primary ring-1 ring-primary/30"><Sparkles className="w-4 h-4" /></div>
+                            <h2 className="text-white text-xl font-serif font-bold tracking-tight">Oneira</h2>
+                        </div>
+                        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10">
+                            <div className={`w-2 h-2 rounded-full ${aiStatus === 'online' ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]' : 'bg-red-500 animate-pulse'}`}></div>
+                            <span className="text-[10px] text-white/50 font-bold uppercase tracking-wider">{aiStatus === 'online' ? 'AI Ready' : 'AI Offline'}</span>
+                        </div>
+                    </header>
+                    <div className="flex-1 overflow-y-auto px-6 py-8">
+                        <div className="flex flex-col mb-10 text-center">
+                            <h1 className="text-3xl font-serif text-white leading-tight mb-2">Your Destiny <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-cosmic-purple">Awaits</span></h1>
+                            <p className="text-white/60 text-sm font-medium">Select a path to reveal your daily fortune.</p>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 h-auto sm:h-[400px]">
+                            <SelectionCard color="purple" title="Dream" subtitle="III - THE MOON" icon={<Moon className="w-12 h-12 text-cosmic-purple" strokeWidth={1} />} onClick={() => handleCardClick('DREAM')} />
+                            <SelectionCard color="cyan" title="Oracle" subtitle="I - THE MAGICIAN" icon={<Eye className="w-12 h-12 text-cosmic-cyan" strokeWidth={1} />} onClick={() => handleCardClick('ORACLE')} />
+                            <SelectionCard color="pink" title="Soul" subtitle="VI - THE LOVERS" icon={<User className="w-12 h-12 text-cosmic-pink" strokeWidth={1} />} onClick={() => handleCardClick('SOUL')} />
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // InputScreen.tsx
+        const InputScreen = ({ onNavigate, onSubmit, isAnalyzing, selectedCard }) => {
+            const [text, setText] = useState('');
+            const handleSubmit = async () => { if (!text.trim()) return; await onSubmit(text); };
+            return (
+                <div className="flex flex-col h-screen max-w-[600px] mx-auto bg-background-dark/80 backdrop-blur-sm border-x border-white/5 shadow-2xl relative">
+                    <header className="flex px-6 py-6 justify-start shrink-0">
+                        <button onClick={() => onNavigate(Screen.SELECTION)} className="group flex items-center justify-center rounded-full h-10 pr-4 pl-3 bg-white/5 hover:bg-white/10 text-white/80 hover:text-white gap-2 text-sm font-bold tracking-wide transition-all">
+                            <ArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1" /><span>RETURN</span>
+                        </button>
+                    </header>
+                    <div className="flex-1 flex flex-col px-8 overflow-y-auto">
+                        <div className="pt-4 pb-6">
+                            <h2 className="font-serif text-white tracking-wide text-3xl md:text-[32px] font-normal leading-tight text-left text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/70">
+                                {selectedCard === 'DREAM' && "Tell us your dream..."}
+                                {selectedCard === 'ORACLE' && "Ask the Oracle..."}
+                                {selectedCard === 'SOUL' && "Speak to your Soul..."}
+                                {!selectedCard && "Tell us your dream..."}
+                            </h2>
+                        </div>
+                        <div className="flex-1 flex flex-col pb-[120px]">
+                            <label className="flex flex-col flex-1 h-full relative group">
+                                <textarea autoFocus value={text} onChange={(e) => setText(e.target.value)} className="form-textarea flex w-full h-full min-h-[300px] bg-transparent border-none focus:ring-0 p-0 text-xl md:text-[22px] text-white/90 font-serif placeholder:text-accent/40 leading-relaxed tracking-wide resize-none" placeholder={selectedCard === 'DREAM' ? "Whisper your thoughts into the void... What seeks to be known?" : "What question burns in your mind?"} />
+                                <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent group-focus-within:via-primary/50 transition-all duration-500" />
+                            </label>
+                        </div>
+                    </div>
+                    <div className="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-background-dark via-background-dark to-transparent z-20">
+                        <button onClick={handleSubmit} disabled={!text.trim() || isAnalyzing} className="relative w-full overflow-hidden rounded-full h-14 px-6 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white text-base font-bold tracking-[0.05em] shadow-[0_0_25px_rgba(255,0,132,0.25)] hover:shadow-[0_0_35px_rgba(255,0,132,0.4)] transition-all transform hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-3 group">
+                            {isAnalyzing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5 animate-pulse" />}
+                            <span>{isAnalyzing ? "INTERPRETING..." : "INTERPRET"}</span>
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        // ResultScreen.tsx
+        const ResultScreen = ({ onNavigate, result }) => {
+            if (!result) return <div className="flex h-screen items-center justify-center bg-background-dark text-white"><Loader2 className="w-10 h-10 animate-spin text-primary" /></div>;
+
+            const lines = result.description.split('\n');
+            const summaryLine = lines.find(l => l.includes('1. [한줄 요약]'))?.replace('1. [한줄 요약]:', '').trim() || result.description.substring(0, 50) + "...";
+            const detailSection = lines.find(l => l.includes('2. [심층 분석]')) ? result.description.split('2. [심층 분석]:')[1]?.split('3. [조언]:')[0]?.trim() : result.description;
+            const adviceSection = lines.find(l => l.includes('3. [조언]')) ? result.description.split('3. [조언]:')[1]?.split('4. [금전운]:')[0]?.trim() : "";
+            const score = result.luckScore || 77;
+
+            return (
+                <div className="flex min-h-screen flex-col items-center justify-center bg-background-dark text-white relative overflow-hidden px-4 py-6">
+                    <div className="z-10 w-full max-w-lg flex flex-col items-center gap-6 h-full max-h-[90vh]">
+                        <div className="text-center space-y-2 shrink-0">
+                            <h2 className="text-primary tracking-widest text-sm font-bold uppercase">Mystic Analysis</h2>
+                            <div className="relative inline-flex items-center justify-center">
+                                <span className="relative text-6xl font-serif text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">{score}</span>
+                                <span className="absolute -top-2 -right-4 text-xs text-white/60">/100</span>
+                            </div>
+                        </div>
+                        <div className="w-48 h-64 shrink-0 rounded-xl bg-gradient-to-b from-cosmic-deep to-black border border-white/10 shadow-[0_0_30px_rgba(139,92,246,0.3)] flex items-center justify-center relative group overflow-hidden">
+                            <div className="relative z-10 text-center p-4">
+                                <Sparkles className="w-12 h-12 text-white/80 mx-auto mb-2 animate-pulse-slow" />
+                                <p className="text-xs text-white/50 tracking-widest uppercase">Astral Projection</p>
+                            </div>
+                        </div>
+                        <div className="w-full bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 p-6 flex-1 overflow-y-auto min-h-0 shadow-2xl">
+                            <div className="mb-6 border-b border-white/10 pb-4">
+                                <h3 className="text-cosmic-cyan text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2"><Stars className="w-4 h-4" /> Oracle's Summary</h3>
+                                <p className="text-lg font-serif italic text-white leading-relaxed">"{summaryLine}"</p>
+                            </div>
+                            <div className="space-y-4 text-sm text-white/80 font-light leading-relaxed">
+                                <div><h4 className="text-white font-bold opacity-90 mb-1">Deep Insight</h4><p>{detailSection}</p></div>
+                                {adviceSection && (
+                                    <div className="bg-primary/10 rounded-lg p-3 border border-primary/20">
+                                        <h4 className="text-primary font-bold opacity-90 mb-1 flex items-center gap-2"><Zap className="w-3 h-3" /> Action Advice</h4>
+                                        <p className="text-primary/90">{adviceSection}</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                        <div className="w-full shrink-0 pt-2">
+                            <button onClick={() => onNavigate(Screen.LANDING)} className="w-full py-4 rounded-xl bg-gradient-to-r from-white/10 to-white/5 hover:from-white/20 hover:to-white/10 border border-white/10 text-white font-bold tracking-widest uppercase transition-all flex items-center justify-center gap-3 backdrop-blur-sm group">
+                                <span>Return to Void</span><ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // HistoryScreen.tsx
+        const Chip = ({ label, active }) => (
+            <button className={`flex h-9 items-center justify-center rounded-full px-5 text-sm font-medium transition-all ${active ? 'bg-primary text-white shadow-[0_0_15px_rgba(255,0,132,0.4)]' : 'bg-[#4b2036]/50 hover:bg-[#4b2036] border border-[#4b2036] text-accent'}`}>{label}</button>
+        );
+        const FortuneCard = ({ fortune }) => {
+            const getIcon = (name) => {
+                switch (name) {
+                    case 'Sun': return <Sun className="w-8 h-8" />;
+                    case 'Moon': return <Moon className="w-8 h-8" />;
+                    case 'Eye': return <Eye className="w-8 h-8" />;
+                    default: return <Sparkles className="w-8 h-8" />;
+                }
+            };
+            return (
+                <div className="group relative flex flex-col bg-background-card rounded-[2rem] p-5 border border-[#4b2036]/50 cursor-pointer overflow-hidden hover:-translate-y-1 transition-transform duration-300 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10">
+                    <div className="flex items-center justify-center aspect-square rounded-full bg-[#230f19] mb-4 border border-[#4b2036] group-hover:border-primary/50 transition-colors text-white group-hover:text-primary">
+                        {getIcon(fortune.icon)}
+                    </div>
+                    <div>
+                        <p className="text-accent text-[10px] font-bold uppercase tracking-wider mb-1 opacity-80">{fortune.date}</p>
+                        <h3 className="text-white text-lg font-serif font-bold leading-tight mb-2 group-hover:text-primary transition-colors">{fortune.title}</h3>
+                        <p className="text-white/60 text-xs line-clamp-2 leading-relaxed">{fortune.description}</p>
+                    </div>
+                </div>
+            );
+        };
+        const HistoryScreen = ({ onNavigate }) => {
+            const mockFortunes = [
+                { id: '1', date: 'Nov 12, 2026', title: 'Clarity', description: 'The fog lifts...', type: 'Clarity', icon: 'Sun' },
+                { id: '2', date: 'Nov 11, 2026', title: 'Mystery', description: 'Shadows whisper...', type: 'Mystery', icon: 'Moon' }
+            ];
+            return (
+                <div className="flex flex-col h-screen max-w-[600px] mx-auto bg-background-dark shadow-2xl border-x border-white/5 relative">
+                    <header className="sticky top-0 z-50 px-6 py-4 flex items-center justify-between border-b border-[#4b2036] bg-[#2e1423]/70 backdrop-blur-xl">
+                        <div className="flex items-center gap-3"><Sparkles className="w-8 h-8 text-primary" /><h1 className="text-2xl font-serif text-white tracking-wide">Oneira</h1></div>
+                    </header>
+                    <main className="flex-1 overflow-y-auto pb-24 scroll-smooth">
+                        <div className="px-6 pt-8 pb-4"><h2 className="text-white text-[32px] font-serif font-bold leading-tight">Your Path</h2></div>
+                        <div className="px-6 pb-6 overflow-x-auto no-scrollbar"><div className="flex gap-3 min-w-max"><Chip active label="All" /><Chip label="Love" /></div></div>
+                        <div className="px-6 grid grid-cols-2 gap-4 pb-8">{mockFortunes.map(f => <FortuneCard key={f.id} fortune={f} />)}</div>
+                    </main>
+                    <div className="absolute bottom-6 left-0 w-full px-6 flex justify-center z-50">
+                        <nav className="bg-[#2e1423]/80 backdrop-blur-lg w-full max-w-[320px] rounded-full px-2 py-2 flex justify-between items-center shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] border border-white/5">
+                            <button onClick={() => onNavigate(Screen.LANDING)} className="flex items-center justify-center h-12 w-12 rounded-full bg-primary text-white"><LayoutGrid className="w-6 h-6" /></button>
+                        </nav>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- APP ---
+
+        function App() {
+            const [screen, setScreen] = useState(Screen.LANDING);
+            const [selectedCard, setSelectedCard] = useState(null);
+            const [isAnalyzing, setIsAnalyzing] = useState(false);
+            const [currentFortune, setCurrentFortune] = useState(null);
+
+            const [aiStatus, setAiStatus] = useState('offline');
+
+            useEffect(() => {
+                const checkStatus = async () => {
+                    try {
+                        const res = await fetch('http://127.0.0.1:8000/');
+                        if (res.ok) setAiStatus('online');
+                        else setAiStatus('offline');
+                    } catch { setAiStatus('offline'); }
+                };
+                checkStatus();
+                const interval = setInterval(checkStatus, 5000);
+                return () => clearInterval(interval);
+            }, []);
+
+            const navigate = (newScreen) => { setScreen(newScreen); };
+            const handleSelectCard = (type) => { setSelectedCard(type); };
+
+            const handleAnalyze = async (text) => {
+                setIsAnalyzing(true);
+
+                // --- MOCK GENERATOR HELPER ---
+                const generateMock = () => {
+                    return new Promise((resolve) => {
+                        setTimeout(() => {
+                            const scores = [88, 92, 77, 65, 99];
+                            const randomScore = scores[Math.floor(Math.random() * scores.length)];
+                            const randomLotto = Array.from({ length: 6 }, () => Math.floor(Math.random() * 45) + 1).sort((a, b) => a - b);
+
+                            resolve({
+                                interpretation: `1. [한줄 요약]: 우주의 기운이 당신을 감싸고 있습니다. (오프라인 모드)\n\n2. [심층 분석]: 현재 AI 서버와의 연결이 불안정하여 '고위 오라클' 대신 '내면의 목소리'가 응답합니다. 당신의 꿈과 질문은 그 자체로 이미 답을 품고 있습니다.\n\n3. [조언]: 잠시 후 다시 시도하거나, 오늘의 운세를 가볍게 즐기세요.`,
+                                luck_score: randomScore,
+                                lotto_numbers: randomLotto
+                            });
+                        }, 1500); // Fake delay for UX
+                    });
+                };
+
+                try {
+                    console.log("Analyzing:", text);
+
+                    // Attempt Fetch
+                    let data = null;
+                    try {
+                        const response = await fetch('http://127.0.0.1:8000/analyze_dream', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ content: selectedCard || 'DREAM', user_context: text })
+                        });
+                        if (response.ok) {
+                            data = await response.json();
+                        } else {
+                            throw new Error("Server returned " + response.status);
+                        }
+                    } catch (networkError) {
+                        console.warn("⚠️ Network/Server Error, switching to offline mock:", networkError);
+                        data = await generateMock();
+                    }
+
+                    // Process Data (Real or Mock)
+                    const newFortune = {
+                        id: Date.now().toString(),
+                        date: new Date().toLocaleDateString(),
+                        title: selectedCard || 'Destiny',
+                        description: data.interpretation,
+                        type: 'Mystery',
+                        icon: selectedCard === 'DREAM' ? 'Moon' : selectedCard === 'ORACLE' ? 'Eye' : 'Heart',
+                        luckScore: data.luck_score,
+                        lotto: data.lotto_numbers
+                    };
+
+                    setCurrentFortune(newFortune);
+                    navigate(Screen.RESULT);
+
+                } catch (error) {
+                    // Final safety net
+                    console.error("Critical Error:", error);
+                    alert("System Error: " + error.message);
+                } finally {
+                    setIsAnalyzing(false);
+                }
+            };
+
+            return (
+                <div className="antialiased min-h-screen font-sans text-white">
+                    <Background />
+                    {screen === Screen.LANDING && <LandingScreen onNavigate={navigate} />}
+                    {screen === Screen.SELECTION && <SelectionScreen onNavigate={navigate} onSelectType={handleSelectCard} />}
+                    {screen === Screen.INPUT && <InputScreen onNavigate={navigate} onSubmit={handleAnalyze} isAnalyzing={isAnalyzing} selectedCard={selectedCard} />}
+                    {screen === Screen.RESULT && <ResultScreen onNavigate={navigate} result={currentFortune} />}
+                    {screen === Screen.HISTORY && <HistoryScreen onNavigate={navigate} />}
+                </div>
+            );
+        }
+
+        // --- RENDER ---
+        const root = createRoot(document.getElementById('root'));
+        root.render(<App />);
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Destiny Font Lab</title>
+    <!-- Importing 10 Candidates -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Aboreto&family=Bellefair&family=Bodoni+Moda:opsz,wght@6..96,400;700&family=Cinzel:wght@400;700&family=Cormorant+Garamond:wght@400;600&family=Italiana&family=Marcellus&family=Philosopher:wght@400;700&family=Playfair+Display:ital,wght@0,400;1,400&family=Syne:wght@400;700&family=Tenor+Sans&display=swap"
+        rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #050505;
+            color: #eee;
+            font-family: sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            color: #D4AF37;
+            margin-bottom: 40px;
+            font-weight: 400;
+            letter-spacing: 2px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 30px;
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: #D4AF37;
+        }
+
+        .label {
+            font-size: 10px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .title {
+            font-size: 32px;
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+
+        .sub {
+            font-size: 14px;
+            opacity: 0.7;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Typography Candidates</h1>
+
+    <div class="grid">
+        <!-- 1. Cormorant Garamond -->
+        <div class="card" style="font-family: 'Cormorant Garamond', serif;">
+            <span class="label" style="font-family: sans-serif">1. Cormorant Garamond (Sharp, Mystic)</span>
+            <div class="title">DESTINY</div>
+            <div class="sub">Reveal Your Fate</div>
+        </div>
+
+        <!-- 2. Tenor Sans -->
+        <div class="card" style="font-family: 'Tenor Sans', sans-serif;">
+            <span class="label" style="font-family: sans-serif">2. Tenor Sans (Humanist, Fashion)</span>
+            <div class="title">DESTINY</div>
+            <div class="sub">Reveal Your Fate</div>
+        </div>
+
+        <!-- 3. Bodoni Moda -->
+        <div class="card" style="font-family: 'Bodoni Moda', serif;">
+            <span class="label" style="font-family: sans-serif">3. Bodoni Moda (Vogue, High Contrast)</span>
+            <div class="title">DESTINY</div>
+            <div class="sub">Reveal Your Fate</div>
+        </div>
+
+        <!-- 4. Syne -->
+        <div class="card" style="font-family: 'Syne', sans-serif;">
+            <span class="label" style="font-family: sans-serif">4. Syne (Art House, Unique)</span>
+            <div class="title" style="font-weight: 700">DESTINY</div>
+            <div class="sub">Reveal Your Fate</div>
+        </div>
+
+        <!-- 5. Italiana -->
+        <div class="card" style="font-family: 'Italiana', serif;">
+            <span class="label" style="font-family: sans-serif">5. Italiana (Elegant, Wide)</span>
+            <div class="title">DESTINY</div>
+            <div class="sub">Reveal Your Fate</div>
+        </div>
+
+        <!-- 6. Marcellus -->
+        <div class="card" style="font-family: 'Marcellus', serif;">
+            <span class="label" style="font-family: sans-serif">6. Marcellus (Roman, Stoic)</span>
+            <div class="title">DESTINY</div>
+            <div class="sub">Reveal Your Fate</div>
+        </div>
+
+        <!-- 7. Philosopher -->
+        <div class="card" style="font-family: 'Philosopher', sans-serif;">
+            <span class="label" style="font-family: sans-serif">7. Philosopher (Flowing, Magic)</span>
+            <div class="title" style="font-weight: 700">DESTINY</div>
+            <div class="sub">Reveal Your Fate</div>
+        </div>
+
+        <!-- 8. Bellefair -->
+        <div class="card" style="font-family: 'Bellefair', serif;">
+            <span class="label" style="font-family: sans-serif">8. Bellefair (Sophisticated, Tall)</span>
+            <div class="title">DESTINY</div>
+            <div class="sub">Reveal Your Fate</div>
+        </div>
+
+        <!-- 9. Aboreto -->
+        <div class="card" style="font-family: 'Aboreto', cursive;">
+            <span class="label" style="font-family: sans-serif">9. Aboreto (Ancient, Etched)</span>
+            <div class="title">DESTINY</div>
+            <div class="sub">Reveal Your Fate</div>
+        </div>
+
+        <!-- 10. Playfair Display -->
+        <div class="card" style="font-family: 'Playfair Display', serif;">
+            <span class="label" style="font-family: sans-serif">10. Playfair Display (Current)</span>
+            <div class="title" style="font-weight: 600">DESTINY</div>
+            <div class="sub">Reveal Your Fate</div>
+        </div>
+    </div>
+</body>
+
+</html>

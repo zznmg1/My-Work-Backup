@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Dream Fortune</string>
+    <string name="title_activity_main">Dream Fortune</string>
+    <string name="package_name">com.dreamfortune.ai</string>
+    <string name="custom_url_scheme">com.dreamfortune.ai</string>
+</resources>

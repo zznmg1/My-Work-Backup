@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/types.ts","./src/vite-env.d.ts","./src/components/dreamcard.tsx","./src/components/dreaminput.tsx","./src/components/fatecard.tsx","./src/components/fateinput.tsx","./src/components/splashscreen.tsx"],"errors":true,"version":"5.9.3"}
