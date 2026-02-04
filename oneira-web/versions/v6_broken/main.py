@@ -1,11 +1,13 @@
-import asyncio
+import sys
 import os
+import asyncio
 import random
-import json
-import requests
-from typing import Optional # Restored
+from typing import Optional
+
+# Windows 콘솔 인코딩 강제 설정
+sys.stdout.reconfigure(encoding='utf-8')
+
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
@@ -92,14 +94,8 @@ async def analyze_dream(request: DreamRequest):
     사용자 정보와 입력된 내용("{request.content}": "{request.user_context}")을 종합적으로 분석하여, 
     정중하고 격식 있는 '하십시오체(습니다)'로 답하세요.
     
-    [강력한 언어 통제]
-    1. **절대 한자(漢字)를 섞어 쓰지 마세요.** (예: 運勢(x) -> 운세(o))
-    2. **본문(1~3번)에는 영어를 절대 쓰지 마세요.** 오직 4번 항목에서만 영어를 사용해야 합니다.
-    3. 순도 100%의 자연스럽고 아름다운 한국어로만 작성하십시오.
-
     **개인화 지침**:
-    - 사용자의 이름, 생년월일, 성별이 제공되면 이를 운세/해몽/심리 분석에 적극 반영하세요. 
-    - (예: "00님, 00년생의 기운으로는...", "여성/남성/비공개 분의 섬세한/강인한 에너지로...")
+    - 사용자의 이름, 생년월일, 성별이 제공되면 이를 운세 해석에 적극 반영하세요. (예: "00님, 00년생의 기운으로는...", "여성/남성/비공개 분의 섬세한/강인한 에너지로...")
     - 이름이 있다면 반드시 이름을 한 번 이상 불러주세요.
 
     [출력 형식]
@@ -107,112 +103,48 @@ async def analyze_dream(request: DreamRequest):
     **경고: 각 항목의 제목(예: 1. 요약) 또는 본문에 아스테리스크(**)나 마크다운 볼드를 절대 사용하지 마세요.**
 
     1. 요약
-    (삶의 방향을 제시하는 정중하고 깊이 있는 한 문장. **한글 전용**)
+    (삶의 방향을 제시하는 정중하고 깊이 있는 한 문장.)
 
     2. 심층
     (현재 상황에 대한 깊이 있는 통찰. 내면의 흐름을 읽어내어 설명하되, 반드시 '~입니다', '~합니다'와 같은 경어체를 사용하세요.
-    **한자나 영어를 섞어 쓰지 마세요.**
     **중요: 무조건 긍정적인 말만 하지 말고, 현실적이고 날카로운 비판이나 우려점도 포함하여 신빙성을 높이세요.**
-    **질문 유형(해몽/운세/타로)에 맞춰서 그에 맞는 전문적인 톤을 유지하십시오.**
-    **필수 조건: 내용은 공백 포함 400자 이상, 3개 이상의 문단으로 나누어 아주 상세하게 작성해야 합니다.**)
+    **필수 조건: 내용은 공백 포함 500자 이상, 3개 이상의 문단으로 나누어 아주 상세하게 작성해야 합니다. 절대 짧게 쓰지 마세요.**)
 
     3. 조언
-    (실천 가능한 따뜻한 조언 한 마디. '~하십시오' 또는 '~하는 것이 좋습니다' 형태로 작성. **한글 전용**)
+    (실천 가능한 따뜻한 조언 한 마디. '~하십시오' 또는 '~하는 것이 좋습니다' 형태로 작성.)
 
-    4. [이미지 프롬프트]: (위의 사용자가 입력한 내용(꿈, 고민 등)에서 연상되는 **구체적인 시각적 이미지**를 영어로 묘사하세요.
-    **반드시 '만화(Manhwa/Webtoon) 스타일'로 묘사하세요.** 20단어 내외.
-    선이 뚜렷하고 색감이 생생한 웹툰 화풍.
-    예: 'A young character looking at a starry sky, manhwa style, webtoon art, vibrant colors, clean lines, comic book aesthetic')
+    4. [이미지 프롬프트]: (타로 카드 스타일의 영어 묘사. 20단어 이내로 간결하게 작성. 예: 'A glowing lighthouse in a storm, tarot style, mystical colors')
     """
         
-    # Groq API Implementation
-    api_key = os.getenv("GROQ_API_KEY")
-    if not api_key:
-        print("ERROR: GROQ_API_KEY not found in .env")
-        return {
-            "interpretation": "1. 오류\nAPI 키가 설정되지 않았습니다.\n\n2. 내용\n.env 파일에 GROQ_API_KEY가 있는지 확인해주세요.\n\n4. [이미지 프롬프트]: Broken connection",
-            "luck_score": 0, "lotto_numbers": []
-        }
-
-    url = "https://api.groq.com/openai/v1/chat/completions"
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {api_key}"
-    }
+    # Try multiple models in sequence to find one with available quota
+    candidate_models = [
+        "gemini-2.0-flash", 
+        "gemini-2.0-flash-lite",
+        "gemini-flash-latest"
+    ]
     
-    # Use Llama 3 70B (High quality, free on Groq)
-    # Use Llama 3 70B (High quality, free on Groq)
-    payload = {
-        "messages": [
-            {
-                "role": "system", 
-                "content": "You are a mystical fortune teller AI. Output ONLY valid JSON structure. Response MUST be in Korean. DO NOT use Chinese characters (Hanja) or Japanese. Pure Korean only."
-            },
-            {
-                "role": "user", 
-                "content": prompt
-            }
-        ],
-        "model": "llama-3.3-70b-versatile",
-        "stream": False,
-        "temperature": 0.7
-    }
-
-    print(f"DEBUG: Sending request to Groq (Llama 3)...")
+    last_exception = None
     
-    try:
-        response = await asyncio.to_thread(requests.post, url, headers=headers, json=payload, timeout=30)
-        
-        if response.status_code != 200:
-            print(f"ERROR: Groq returned {response.status_code}: {response.text}")
-            raise Exception(f"Groq API Error: {response.text}")
-
-        result = response.json()
-        raw_text = result['choices'][0]['message']['content']
-        print(f"DEBUG: Grok response received (Length: {len(raw_text)})")
-        
-        # 1. Clean Markdown
-        cleaned_text = raw_text.strip()
-        
-        # 2. Strong Regex Sanitization
-        import re
-        
-        # Split text into lines to process them individually
-        lines = cleaned_text.split('\n')
-        processed_lines = []
-        is_image_prompt_section = False
-        
-        for line in lines:
-            # Check if we are entering the Image Prompt section (4.)
-            if "4." in line and "이미지" in line:
-                is_image_prompt_section = True
+    for model_name in candidate_models:
+        try:
+            print(f"DEBUG: Attempting generation with {model_name}...")
+            # Configure model specifically for this attempt to ensure no lingering state
+            model = genai.GenerativeModel(model_name)
             
-            if is_image_prompt_section:
-                # Keep English in Image Prompt section
-                processed_lines.append(line)
-            else:
-                # For non-image sections: Remove English characters, Hanja, and Japanese
-                # Remove English (A-Z, a-z)
-                line_no_english = re.sub(r'[a-zA-Z]', '', line) 
-                # Remove Hanja (Chinese)
-                line_no_hanja = re.sub(r'[\u4e00-\u9fff]', '', line_no_english)
-                # Remove Japanese
-                line_final = re.sub(r'[\u3040-\u309f\u30a0-\u30ff]', '', line_no_hanja)
-                processed_lines.append(line_final)
-        
-        cleaned_text = '\n'.join(processed_lines)
-        
-        # Just return the text.
-        return {
-            "interpretation": cleaned_text,
-            "luck_score": random.randint(60, 100), 
-            "lotto_numbers": sorted(random.sample(range(1, 46), 6))
-        }
-
-    except Exception as e:
-        print(f"ERROR: Groq Request Failed: {e}")
-        last_exception = e
-        # Fall through to error handler
+            # Gemini 호출
+            response = await asyncio.to_thread(model.generate_content, prompt)
+            
+            return {
+                "interpretation": response.text,
+                "lotto_numbers": sorted(random.sample(range(1, 46), 6)), 
+                "luck_score": random.randint(70, 95)
+            }
+        except Exception as e:
+            last_exception = e
+            error_msg = str(e)
+            print(f"WARNING: Failed with {model_name}: {error_msg}")
+            # Continue to next model if this one failed
+            continue
 
     # If all models failed
     with open("debug_log.txt", "a") as log:

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
+    <title>Oneira: 2026 Daily Fortune (Premium v2.0)</title>
+
+    <!-- Tailwind (Utility) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: "#ff0084", background: { dark: "#050510" }, cosmic: { purple: "#8b5cf6", cyan: "#06b6d4" }, accent: "#ce8dae" },
+                    fontFamily: { serif: ['"Tenor Sans"', 'serif'], sans: ['"Manrope"', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+
+    <!-- 1. DESIGN CODE (Link) -->
+    <link rel="stylesheet" href="css/design.css">
+
+    <!-- UMD Scripts (Architecture) -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+</head>
+
+<body>
+    <!-- Background Elements (Global Design) -->
+    <div class="fixed inset-0 w-full h-full overflow-hidden pointer-events-none -z-10 bg-[#050510]">
+        <div
+            class="absolute top-[20%] left-[20%] w-[500px] h-[500px] bg-pink-600/10 rounded-full blur-[120px] animate-pulse-slow">
+        </div>
+        <div class="absolute bottom-[20%] right-[20%] w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px]">
+        </div>
+    </div>
+
+    <!-- React Root -->
+    <div id="root"></div>
+
+    <!-- 2. LOGIC CODE (Link) with Babel for JSX -->
+    <script type="text/babel" src="js/logic.js"></script>
+</body>
+
+</html>
