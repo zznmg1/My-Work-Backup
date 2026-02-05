@@ -515,7 +515,7 @@
                     // Construct enhanced context
                     const userContextStr = `Name: ${userInfo?.name || 'Unknown'}, Birth: ${userInfo?.birth || 'Unknown'}, Gender: ${userInfo?.gender || 'Unknown'}. Content: ${context}`;
 
-                    const res = await fetch('http://127.0.0.1:8000/analyze_dream', {
+                    const res = await fetch('https://dream-fortune-ai.onrender.com/analyze_dream', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ content: type, user_context: userContextStr })
@@ -539,7 +539,7 @@
                         const resultId = Date.now();
 
                         try {
-                            const cacheRes = await fetch('http://127.0.0.1:8000/cache_image', {
+                            const cacheRes = await fetch('https://dream-fortune-ai.onrender.com/cache_image', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ url: generatedImageUrl, id: resultId.toString() })
