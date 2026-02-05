@@ -320,7 +320,7 @@
 
                                                 // Tier 1 Failure -> Try Tier 2
                                                 if (currentSrc.includes('pollinations') && !currentSrc.includes('retry=true')) {
-                                                    e.currentTarget.src = `https://image.pollinations.ai/prompt/comic%20book%20art,%20linear%20art?width=800&height=1200&model=flux&seed=${item.id}&retry=true`;
+                                                    e.currentTarget.src = `https://image.pollinations.ai/prompt/manhwa%20style%20tarot,%20vibrant%20colors,%20webtoon?width=800&height=1200&model=flux&seed=${item.id}&retry=true`;
                                                     return;
                                                 }
 
@@ -446,10 +446,11 @@
                                     onError={(e) => {
                                         const currentSrc = e.currentTarget.src;
 
-                                        // Tier 1 Failure -> Try Tier 2 (Pollinations Retry with simpler prompt)
+                                        // Tier 1 Failure -> Try Tier 2 (Pollinations Retry with simpler prompt but still COLOR)
                                         if (currentSrc.includes('pollinations') && !currentSrc.includes('retry=true')) {
-                                            console.warn("Pollinations Tier 1 failed, switching to Tier 2");
-                                            e.currentTarget.src = `https://image.pollinations.ai/prompt/comic%20book%20art,%20linear%20art,%20black%20and%20white?width=800&height=1200&model=flux&seed=${Math.random()}&retry=true`;
+                                            console.warn("Pollinations Tier 1 failed, switching to Tier 2 (Full Color Retry)");
+                                            // Retry with simple but COLORFUL prompt
+                                            e.currentTarget.src = `https://image.pollinations.ai/prompt/manhwa%20style%20tarot,%20vibrant%20colors,%20webtoon,%20masterpiece?width=800&height=1200&model=flux&seed=${Math.random()}&retry=true`;
                                             return;
                                         }
 
@@ -527,10 +528,11 @@
                         const promptMatch = data.interpretation.match(promptRegex);
                         let imagePrompt = promptMatch ? promptMatch[1].trim() : "Mystic tarot card, ethereal light";
                         if (imagePrompt.length > 150) imagePrompt = imagePrompt.substring(0, 150);
-                        // Force Manga Style via Prompt Engineering in URL
-                        const styleTags = ", manhwa style, webtoon, comic book art, 2d, flat color, vibrant";
+                        // Force High-Quality Manhwa/Webtoon Style
+                        const styleTags = ", manhwa style, webtoon, anime art, masterpiece, 8k, vibrant colors, dramatic lighting, highly detailed, cinematic composition";
                         const finalPrompt = imagePrompt + styleTags;
-                        const generatedImageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(finalPrompt)}?width=800&height=1200&seed=${Math.random()}&nologo=true&model=turbo`;
+                        // UPGRADE: Using 'flux' model for superior prompt adherence and detail.
+                        const generatedImageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(finalPrompt)}?width=800&height=1200&seed=${Math.random()}&nologo=true&model=flux`;
 
                         // Cache Image Logic
                         let finalUrl = generatedImageUrl;

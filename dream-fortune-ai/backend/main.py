@@ -153,10 +153,9 @@ async def analyze_dream(request: DreamRequest):
     3. 조언
     (실천 가능한 따뜻한 조언 한 마디. '~하십시오' 또는 '~하는 것이 좋습니다' 형태로 작성. **한글 전용**)
 
-    4. [이미지 프롬프트]: (위의 사용자가 입력한 내용(꿈, 고민 등)의 **핵심 상황**을 묘사하는 **만화의 한 장면(Single Comic Panel)**을 영어로 작성하세요.
-    **중요: 풍경만 그리지 마세요. 반드시 상황 속에 있는 '인물(Character)'과 '행동(Action)'을 포함하세요.**
-    스타일: Full Color Comic Book, Graphic Novel, Dynamic Angle, Expressive characters.
-    (예: 'A close-up of a worried man looking at a broken mirror, comic book style, dramatic lighting, detailed facial expression, graphic novel aesthetic')
+    4. [이미지 프롬프트]: (위의 사용자가 입력한 내용(꿈, 고민 등)의 핵심 장면을 **'노션 스타일(Notion Style)'의 라인 아트**로 묘사하는 **상세하고 구체적인 영어 문장**으로 작성하세요.
+    **중요: 추상적인 단어 대신, 실제로 그림으로 그릴 수 있는 '사물'과 '행동'을 명확히 묘사해야 합니다.**
+    (예: 'A person standing on a cliff looking at the moon, comic style line art, simple, black and white, minimalist')
     """
         
     # Groq API Implementation
