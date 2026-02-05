@@ -312,13 +312,21 @@
                                     {/* Image Thumbnail */}
                                     <div className="aspect-[2/3] w-full rounded-2xl bg-black mb-3 overflow-hidden relative">
                                         <img
-                                            src={item.imageUrl || `https://picsum.photos/seed/${item.id || 999}/800/1200?grayscale&blur=2`}
+                                            src={item.imageUrl}
                                             className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
                                             alt="Fortune"
                                             onError={(e) => {
-                                                if (!e.currentTarget.src.includes('picsum')) {
-                                                    const seed = item.id ? item.id : 999;
-                                                    e.currentTarget.src = `https://picsum.photos/seed/${seed}/800/1200?grayscale&blur=2`;
+                                                const currentSrc = e.currentTarget.src;
+
+                                                // Tier 1 Failure -> Try Tier 2
+                                                if (currentSrc.includes('pollinations') && !currentSrc.includes('retry=true')) {
+                                                    e.currentTarget.src = `https://image.pollinations.ai/prompt/comic%20book%20art,%20linear%20art?width=800&height=1200&model=flux&seed=${item.id}&retry=true`;
+                                                    return;
+                                                }
+
+                                                // Tier 2 Failure -> Try Tier 3 (DiceBear)
+                                                if (currentSrc.includes('pollinations') && currentSrc.includes('retry=true')) {
+                                                    e.currentTarget.src = `https://api.dicebear.com/9.x/notionists/svg?seed=${item.id}&backgroundColor=2e1423`;
                                                 }
                                             }}
                                         />
@@ -407,23 +415,6 @@
         const ResultView = ({ result, onAccept }) => {
             if (!result) return null;
 
-            // Robust Parsing: Handle **, [], and various spacings
-            // Looks for "4." followed by anything until "프롬프트" or "Prompt" then capture the rest
-            const promptRegex = /4\.\s*(?:\*\*|\[)?\s*(?:이미지\s*프롬프트|Image\s*Prompt)\s*(?:\*\*|\])?\s*:?\s*(.*)/i;
-            const promptMatch = result.description.match(promptRegex);
-
-            // Fix 502 Error: Truncate prompt to safe length (150 chars) and use 'turbo' model
-            let imagePrompt = promptMatch ? promptMatch[1].trim() : "Mystic tarot card, ethereal light";
-            if (imagePrompt.length > 150) imagePrompt = imagePrompt.substring(0, 150);
-
-            // URL handling:
-            // 1. If result has a saved imageUrl (from History), use it.
-            // 2. If not, generate a new one based on the prompt.
-            // We use useState to hold the URL so it doesn't regenerate on internal re-renders.
-            const [finalImageUrl] = useState(() => {
-                return result.imageUrl || `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt)}?width=800&height=1200&seed=${Math.random()}&nologo=true&model=turbo`;
-            });
-
             // Clean Description: Remove the "4. ..." part
             let cleanDescription = result.description;
             const splitMatch = result.description.match(/4\.\s*(?:\*\*|\[)?\s*이미지/i);
@@ -434,7 +425,7 @@
             return (
                 <div className="flex flex-col items-center h-full w-full z-40 bg-background relative overflow-hidden animate-fade-in px-6 text-center">
                     {/* Background Blur Effect */}
-                    <div className="absolute inset-0 z-0 bg-cover bg-center opacity-30 blur-xl scale-110 transition-opacity duration-1000" style={{ backgroundImage: `url('${finalImageUrl}')` }}></div>
+                    <div className="absolute inset-0 z-0 bg-cover bg-center opacity-30 blur-xl scale-110 transition-opacity duration-1000" style={{ backgroundImage: `url('${result.imageUrl}')` }}></div>
                     <div className="absolute inset-0 z-0 bg-gradient-to-b from-background/90 via-background/95 to-background"></div>
 
                     <div className="relative z-10 flex flex-col items-center w-full max-w-lg overflow-y-auto max-h-screen py-10 no-scrollbar">
@@ -448,17 +439,26 @@
                                 </div>
 
                                 <img
-                                    src={finalImageUrl} alt="Destiny Card"
+                                    src={result.imageUrl} alt="Destiny Card"
                                     className="relative w-full h-full object-cover z-10"
                                     style={{ minHeight: '100%' }}
                                     loading="eager"
                                     onError={(e) => {
-                                        // Fallback to Picsum (Reliable) if Pollinations (Unstable) fails
-                                        // Use DETERMINISTIC seed based on the UNIQUE RESULT ID so it's unique per fortune but stable on re-view
-                                        if (!e.currentTarget.src.includes('picsum')) {
-                                            console.warn("Pollinations failed, switching to Picsum fallback");
-                                            const seed = result.id ? result.id : 999;
-                                            e.currentTarget.src = `https://picsum.photos/seed/${seed}/800/1200?grayscale&blur=2`;
+                                        const currentSrc = e.currentTarget.src;
+
+                                        // Tier 1 Failure -> Try Tier 2 (Pollinations Retry with simpler prompt)
+                                        if (currentSrc.includes('pollinations') && !currentSrc.includes('retry=true')) {
+                                            console.warn("Pollinations Tier 1 failed, switching to Tier 2");
+                                            e.currentTarget.src = `https://image.pollinations.ai/prompt/comic%20book%20art,%20linear%20art,%20black%20and%20white?width=800&height=1200&model=flux&seed=${Math.random()}&retry=true`;
+                                            return;
+                                        }
+
+                                        // Tier 2 Failure -> Try Tier 3 (DiceBear 'Notionists' - Guaranteed & Stylish)
+                                        if (currentSrc.includes('pollinations') && currentSrc.includes('retry=true')) {
+                                            console.warn("Pollinations Tier 2 failed, switching to DiceBear Fallback");
+                                            // 'Notionists' style is very clean, comic-like, and fits the aesthetic
+                                            // Use result.id to match HistoryView
+                                            e.currentTarget.src = `https://api.dicebear.com/9.x/notionists/svg?seed=${result.id}&backgroundColor=2e1423`;
                                         }
                                     }}
                                 />
@@ -527,21 +527,45 @@
                         const promptMatch = data.interpretation.match(promptRegex);
                         let imagePrompt = promptMatch ? promptMatch[1].trim() : "Mystic tarot card, ethereal light";
                         if (imagePrompt.length > 150) imagePrompt = imagePrompt.substring(0, 150);
-                        const generatedImageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt)}?width=800&height=1200&seed=${Math.random()}&nologo=true&model=turbo`;
+                        // Force Manga Style via Prompt Engineering in URL
+                        const styleTags = ", manhwa style, webtoon, comic book art, 2d, flat color, vibrant";
+                        const finalPrompt = imagePrompt + styleTags;
+                        const generatedImageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(finalPrompt)}?width=800&height=1200&seed=${Math.random()}&nologo=true&model=turbo`;
+
+                        // Cache Image Logic
+                        let finalUrl = generatedImageUrl;
+                        const resultId = Date.now();
+
+                        try {
+                            const cacheRes = await fetch('http://127.0.0.1:8000/cache_image', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ url: generatedImageUrl, id: resultId.toString() })
+                            });
+                            if (cacheRes.ok) {
+                                const cacheData = await cacheRes.json();
+                                if (cacheData.success) {
+                                    finalUrl = cacheData.local_url;
+                                    console.log("Image cached locally:", finalUrl);
+                                }
+                            }
+                        } catch (err) {
+                            console.warn("Image caching failed, using remote URL:", err);
+                        }
 
                         const newResult = {
-                            id: Date.now(), // Unique ID for finding this item and seeding random images
+                            id: resultId, // Unique ID for finding this item and seeding random images
                             title: data.luck_score.toString(),
                             description: data.interpretation,
                             icon: type === FortuneType.DREAM ? 'mode_night' : type === FortuneType.ORACLE ? 'visibility' : 'favorite',
                             date: new Date().toLocaleDateString(),
-                            imageUrl: generatedImageUrl // Save the specific image URL
+                            imageUrl: finalUrl // Use Local URL if available
                         };
                         setResult(newResult);
                         setHistory(prev => [newResult, ...prev]);
                     } else throw new Error();
                 } catch {
-                    const fallbackUrl = "https://image.pollinations.ai/prompt/Mystical%20Fog,%20dreamy%20atmosphere,%20purple%20and%20blue%20light,%20tarot%20style?width=800&height=1200&nologo=true&model=turbo";
+                    const fallbackUrl = "https://image.pollinations.ai/prompt/Comic%20book%20scene,%20action%20shot,%20vibrant%20colors?width=800&height=1200&nologo=true&model=turbo";
                     const fallback = {
                         id: Date.now(),
                         title: "88",

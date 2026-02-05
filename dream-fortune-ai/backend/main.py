@@ -5,11 +5,21 @@ import json
 import requests
 from typing import Optional # Restored
 from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles # Added for image serving
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
 import google.generativeai as genai
+import shutil
+import uuid
+
+# Ensure assets directory exists
+os.makedirs("assets/images", exist_ok=True)
+
+class CacheRequest(BaseModel):
+    url: str
+    id: str
 
 # 환경변수 로드 (.env 파일에서 GEMINI_API_KEY 가져오기)
 load_dotenv()
@@ -48,6 +58,30 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Mount the assets folder
+app.mount("/assets", StaticFiles(directory="assets"), name="assets")
+
+@app.post("/cache_image")
+async def cache_image(request: CacheRequest):
+    try:
+        # Generate filename
+        filename = f"{request.id}.jpg"
+        filepath = f"assets/images/{filename}"
+        
+        # Download image
+        response = requests.get(request.url, stream=True, timeout=10)
+        if response.status_code == 200:
+            with open(filepath, 'wb') as f:
+                shutil.copyfileobj(response.raw, f)
+            
+            # Return local URL
+            return {"local_url": f"http://127.0.0.1:8000/assets/images/{filename}", "success": True}
+        else:
+             return {"success": False, "error": "Download failed"}
+    except Exception as e:
+        print(f"Cache failed: {e}")
+        return {"success": False, "error": str(e)}
 
 # 데이터 모델
 class DreamRequest(BaseModel):
@@ -119,10 +153,10 @@ async def analyze_dream(request: DreamRequest):
     3. 조언
     (실천 가능한 따뜻한 조언 한 마디. '~하십시오' 또는 '~하는 것이 좋습니다' 형태로 작성. **한글 전용**)
 
-    4. [이미지 프롬프트]: (위의 사용자가 입력한 내용(꿈, 고민 등)에서 연상되는 **구체적인 시각적 이미지**를 영어로 묘사하세요.
-    **반드시 '만화(Manhwa/Webtoon) 스타일'로 묘사하세요.** 20단어 내외.
-    선이 뚜렷하고 색감이 생생한 웹툰 화풍.
-    예: 'A young character looking at a starry sky, manhwa style, webtoon art, vibrant colors, clean lines, comic book aesthetic')
+    4. [이미지 프롬프트]: (위의 사용자가 입력한 내용(꿈, 고민 등)의 **핵심 상황**을 묘사하는 **만화의 한 장면(Single Comic Panel)**을 영어로 작성하세요.
+    **중요: 풍경만 그리지 마세요. 반드시 상황 속에 있는 '인물(Character)'과 '행동(Action)'을 포함하세요.**
+    스타일: Full Color Comic Book, Graphic Novel, Dynamic Angle, Expressive characters.
+    (예: 'A close-up of a worried man looking at a broken mirror, comic book style, dramatic lighting, detailed facial expression, graphic novel aesthetic')
     """
         
     # Groq API Implementation
