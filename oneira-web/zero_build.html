@@ -69,6 +69,22 @@
 </head>
 
 <body class="bg-background text-white antialiased overflow-hidden">
+    <!-- Initial Loading Screen to prevent font flicker -->
+    <div id="initial-loader"
+        style="position:fixed;inset:0;z-index:9999;background:#150910;display:flex;align-items:center;justify-content:center;">
+        <div style="text-align:center;opacity:0.5;">
+            <div
+                style="width:40px;height:40px;border:2px solid rgba(255,0,132,0.3);border-top-color:#ff0084;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto;">
+            </div>
+        </div>
+        <style>
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg)
+                }
+            }
+        </style>
+    </div>
     <div id="root"></div>
 
     <script type="text/babel">
@@ -144,7 +160,7 @@
                         {userName ? `${userName}님` : '정보 수정'}
                     </button>
                 </div>
-                <div className="flex-1 overflow-y-auto px-6 pt-2 pb-20">
+                <div className="flex-1 overflow-y-auto px-6 pt-2 pb-0">
                     <div className="flex flex-col mb-8 text-center">
                         <h1 className="text-3xl font-serif text-white leading-tight mb-2">
                             2026<br />
@@ -153,7 +169,7 @@
                         <p className="text-white/60 text-sm font-medium">운명을 확인할 길을 선택하세요.</p>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row justify-center items-stretch gap-3 w-full min-h-[420px]">
+                    <div className="flex flex-col sm:flex-row justify-center items-stretch gap-3 w-full flex-1">
                         {/* 1. DREAM */}
                         <div onClick={() => onSelect(FortuneType.DREAM)} className="group relative flex-1 cursor-pointer transition-all duration-500 hover:flex-[1.2] hover:-translate-y-2">
                             <div className="relative h-full w-full rounded-[1.5rem] border border-cosmic-purple/50 bg-[#0a0510] shadow-[0_0_15px_rgba(139,92,246,0.1)] group-hover:shadow-[0_0_30px_rgba(139,92,246,0.4)] group-hover:border-cosmic-purple transition-all duration-300 overflow-hidden flex flex-col items-center justify-center">
@@ -172,7 +188,7 @@
                         <div onClick={() => onSelect(FortuneType.ORACLE)} className="group relative flex-1 cursor-pointer transition-all duration-500 hover:flex-[1.2] hover:-translate-y-2">
                             <div className="relative h-full w-full rounded-[1.5rem] border border-cosmic-cyan/50 bg-[#050a10] shadow-[0_0_15px_rgba(6,182,212,0.1)] group-hover:shadow-[0_0_30px_rgba(6,182,212,0.4)] group-hover:border-cosmic-cyan transition-all duration-300 overflow-hidden flex flex-col items-center justify-center">
                                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cosmic-cyan/5 to-cosmic-cyan/10 opacity-50"></div>
-                                <div className="w-20 h-32 border border-cosmic-cyan/60 flex items-center justify-center bg-cosmic-cyan/5 mb-4">
+                                <div className="w-20 h-20 rounded-full border-2 border-cosmic-cyan/80 shadow-[0_0_15px_rgba(6,182,212,0.5)] flex items-center justify-center bg-cosmic-cyan/5 mb-4">
                                     <span className="material-symbols-outlined text-cosmic-cyan text-5xl">visibility</span>
                                 </div>
                                 <div className="text-center relative z-10">
@@ -293,7 +309,7 @@
 
         const HistoryView = ({ history, onBack, onSelect }) => (
             <div className="flex flex-col h-full w-full animate-fade-in pb-24">
-                <Header title="Collection" showBack onBack={onBack} />
+                <Header title="" showBack onBack={onBack} />
                 <div className="px-6 pt-2 pb-6 flex-1 overflow-y-auto">
                     <div className="mb-6">
                         <h2 className="text-white text-3xl font-serif font-bold leading-tight">Your Path</h2>
@@ -504,16 +520,51 @@
                 return saved ? JSON.parse(saved) : [];
             });
 
-            // Save history to localStorage whenever it changes
-            useEffect(() => {
-                localStorage.setItem('dream_history', JSON.stringify(history));
-            }, [history]);
+            // Track daily fortune count
+            const [lastFortuneDate, setLastFortuneDate] = useState(() => localStorage.getItem('last_fortune_date') || '');
+
+            const showRewardedAd = async () => {
+                if (typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform()) {
+                    try {
+                        const { AdMob } = await import('@capacitor-community/admob');
+                        await AdMob.prepareRewardVideoAd({
+                            adId: 'ca-app-pub-9625149267611159/5587558816',
+                        });
+                        const reward = await AdMob.showRewardVideoAd();
+                        return !!reward;
+                    } catch (e) {
+                        console.error('Ad failed:', e);
+                        // If ad fails to load, maybe let them see it anyway to not block user exp?
+                        // Or just return false. Let's return true if it's a test environment or fallback.
+                        return true;
+                    }
+                }
+                return true; // Browser fallback
+            };
 
             const processFortune = async (type, context) => {
+                const today = new Date().toLocaleDateString();
+
+                // If they already saw a fortune today, ask for an ad
+                if (lastFortuneDate === today) {
+                    const confirmed = window.confirm("오늘의 무료 운세를 이미 보셨습니다. 광고를 시청하고 한 번 더 확인하시겠습니까?");
+                    if (!confirmed) return;
+
+                    setView(ViewState.LOADING); // Show loading while ad prepares
+                    const success = await showRewardedAd();
+                    if (!success) {
+                        alert("광고 시청에 실패했습니다. 잠시 후 다시 시도해주세요.");
+                        setView(ViewState.SELECTION);
+                        return;
+                    }
+                }
+
                 setView(ViewState.LOADING);
+                setLastFortuneDate(today);
+                localStorage.setItem('last_fortune_date', today);
                 try {
-                    // Construct enhanced context
-                    const userContextStr = `Name: ${userInfo?.name || 'Unknown'}, Birth: ${userInfo?.birth || 'Unknown'}, Gender: ${userInfo?.gender || 'Unknown'}. Content: ${context}`;
+                    // Construct enhanced context with STRICT negative constraints
+                    const userContextStr = `Name: ${userInfo?.name || 'Unknown'}, Birth: ${userInfo?.birth || 'Unknown'}, Gender: ${userInfo?.gender || 'Unknown'}. Content: ${context}. [SYSTEM INSTRUCTION: DO NOT use phrases like '30년 경력', '전문가', '베테랑' or introduction. Just give the interpretation directly.]`;
 
                     const res = await fetch('https://dream-fortune-ai.onrender.com/analyze_dream', {
                         method: 'POST',
@@ -621,8 +672,48 @@
             );
         };
 
+        // Hide initial loader after fonts load
         const root = createRoot(document.getElementById('root'));
         root.render(<App />);
+
+        // Remove loader after a short delay to allow fonts to settle
+        setTimeout(() => {
+            const loader = document.getElementById('initial-loader');
+            if (loader) loader.style.display = 'none';
+        }, 600);
+
+        // --- AdMob Integration ---
+        // Capacitor AdMob을 동적으로 로드 (앱 환경에서만 동작)
+        (async function initAdMob() {
+            try {
+                // Capacitor Plugins 체크
+                if (typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform()) {
+                    const { AdMob, BannerAdSize, BannerAdPosition } = await import('@capacitor-community/admob');
+
+                    // AdMob 초기화
+                    await AdMob.initialize({
+                        requestTrackingAuthorization: true,
+                        testingDevices: [],
+                        initializeForTesting: false
+                    });
+                    console.log('AdMob initialized successfully');
+
+                    // 배너 광고 표시 (하단에 고정)
+                    await AdMob.showBanner({
+                        adId: 'ca-app-pub-9625149267611159/8529318868',
+                        adSize: BannerAdSize.ADAPTIVE_BANNER,
+                        position: BannerAdPosition.BOTTOM_CENTER,
+                        margin: 0,
+                        isTesting: false
+                    });
+                    console.log('Banner ad displayed');
+                } else {
+                    console.log('AdMob skipped: Not running in native app environment');
+                }
+            } catch (error) {
+                console.error('AdMob initialization failed:', error);
+            }
+        })();
     </script>
 </body>
 
