@@ -88,12 +88,36 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useRef } = React;
         const { createRoot } = ReactDOM;
+
+        // --- 영구 저장소 헬퍼 (Capacitor Preferences API) ---
+        const Storage = {
+            async get(key) {
+                try {
+                    if (typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform()) {
+                        const { Preferences } = await import('@capacitor/preferences');
+                        const { value } = await Preferences.get({ key });
+                        return value;
+                    }
+                } catch (e) { console.error('Storage get failed:', e); }
+                return localStorage.getItem(key);
+            },
+            async set(key, value) {
+                try {
+                    if (typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform()) {
+                        const { Preferences } = await import('@capacitor/preferences');
+                        await Preferences.set({ key, value });
+                        return;
+                    }
+                } catch (e) { console.error('Storage set failed:', e); }
+                localStorage.setItem(key, value);
+            }
+        };
 
         // --- CONSTANTS ---
         const ViewState = { SPLASH: 'SPLASH', SELECTION: 'SELECTION', USER_INFO: 'USER_INFO', INPUT_DREAM: 'INPUT_DREAM', LOADING: 'LOADING', RESULT: 'RESULT', HISTORY: 'HISTORY' };
-        const FortuneType = { DREAM: 'DREAM', ORACLE: 'ORACLE', SOUL: 'SOUL' };
+        const FortuneType = { DREAM: 'DREAM', FORTUNE: 'FORTUNE', SOUL: 'SOUL' };
 
         // --- COMPONENTS ---
 
@@ -127,16 +151,25 @@
 
         const SplashView = ({ onEnter }) => (
             <div className="flex flex-col items-center justify-center h-full w-full space-y-16 animate-fade-in px-6">
-                <div className="flex items-center justify-center gap-8 md:gap-12">
-                    <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center backdrop-blur-md">
-                        <span className="material-symbols-outlined text-3xl text-white/90">dark_mode</span>
+                <div className="flex items-center justify-center gap-6 md:gap-10">
+                    {/* 해몽 아이콘 */}
+                    <div className="flex flex-col items-center gap-2">
+                        <div className="w-14 h-14 rounded-full bg-cosmic-purple/10 border border-cosmic-purple/30 flex items-center justify-center backdrop-blur-md">
+                            <span className="text-2xl">🌙</span>
+                        </div>
+                        <span className="text-[10px] text-white/50 tracking-wider">해몽</span>
                     </div>
-                    <div onClick={onEnter} className="cursor-pointer group relative w-24 h-24 rounded-full bg-white/10 border border-white/20 flex items-center justify-center backdrop-blur-xl transition-all duration-500 hover:scale-110 hover:shadow-[0_0_50px_rgba(255,0,132,0.5)]">
-                        <span className="material-symbols-outlined text-5xl text-primary drop-shadow-[0_0_8px_rgba(255,0,132,0.8)] group-hover:rotate-12 transition-transform duration-500">auto_awesome</span>
+                    {/* 메인 버튼 */}
+                    <div onClick={onEnter} className="cursor-pointer group relative w-24 h-24 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center backdrop-blur-xl transition-all duration-500 hover:scale-110 hover:shadow-[0_0_50px_rgba(255,0,132,0.5)]">
+                        <span className="text-5xl drop-shadow-[0_0_8px_rgba(255,0,132,0.8)] group-hover:rotate-12 transition-transform duration-500">✨</span>
                         <div className="absolute inset-0 rounded-full border border-primary/30 animate-pulse-slow"></div>
                     </div>
-                    <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center backdrop-blur-md">
-                        <span className="material-symbols-outlined text-3xl text-white/90">blur_on</span>
+                    {/* 운세 아이콘 */}
+                    <div className="flex flex-col items-center gap-2">
+                        <div className="w-14 h-14 rounded-full bg-cosmic-cyan/10 border border-cosmic-cyan/30 flex items-center justify-center backdrop-blur-md">
+                            <span className="text-2xl">🔮</span>
+                        </div>
+                        <span className="text-[10px] text-white/50 tracking-wider">운세</span>
                     </div>
                 </div>
 
@@ -184,8 +217,8 @@
                             </div>
                         </div>
 
-                        {/* 2. ORACLE */}
-                        <div onClick={() => onSelect(FortuneType.ORACLE)} className="group relative flex-1 cursor-pointer transition-all duration-500 hover:flex-[1.2] hover:-translate-y-2">
+                        {/* 2. FORTUNE (운세) */}
+                        <div onClick={() => onSelect(FortuneType.FORTUNE)} className="group relative flex-1 cursor-pointer transition-all duration-500 hover:flex-[1.2] hover:-translate-y-2">
                             <div className="relative h-full w-full rounded-[1.5rem] border border-cosmic-cyan/50 bg-[#050a10] shadow-[0_0_15px_rgba(6,182,212,0.1)] group-hover:shadow-[0_0_30px_rgba(6,182,212,0.4)] group-hover:border-cosmic-cyan transition-all duration-300 overflow-hidden flex flex-col items-center justify-center">
                                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cosmic-cyan/5 to-cosmic-cyan/10 opacity-50"></div>
                                 <div className="w-20 h-20 rounded-full border-2 border-cosmic-cyan/80 shadow-[0_0_15px_rgba(6,182,212,0.5)] flex items-center justify-center bg-cosmic-cyan/5 mb-4">
@@ -375,9 +408,9 @@
                     title = "어떤 꿈을 꾸셨나요?";
                     placeholder = "꿈에서 본 장면, 느꼈던 감정, 기억나는 사물들을 자세히 적어주세요...\n(예: 높은 곳에서 떨어지는 꿈을 꿨는데 무섭지 않고 시원했어요)";
                     break;
-                case FortuneType.ORACLE:
+                case FortuneType.FORTUNE:
                     title = "무엇이 궁금하신가요?";
-                    placeholder = "현재 고민하고 있는 문제나, 미래에 대해 알고 싶은 내용을 적어주세요...\n(예: 지금 다니는 회사를 계속 다녀야 할지, 아니면 이직을 해야 할지 고민입니다)";
+                    placeholder = "연애, 직장, 금전 등의 고민이나 오늘의 운세가 궁금하다면 적어주세요...\n(예: 요즘 연애운이 궁금해요 / 이번 달 직장운이 어떨까요? / 오늘 하루 운세 알려주세요)";
                     break;
                 case FortuneType.SOUL:
                     title = "마음이 어떠신가요?";
@@ -509,19 +542,39 @@
         const App = () => {
             const [view, setView] = useState(ViewState.SPLASH);
             const [selectedType, setSelectedType] = useState(null);
-            const [userInfo, setUserInfo] = useState(() => {
-                const saved = localStorage.getItem('oneira_user_info');
-                return saved ? JSON.parse(saved) : null;
-            });
+            const [userInfo, setUserInfo] = useState(null);
             const [result, setResult] = useState(null);
-            // Load history from localStorage if available
-            const [history, setHistory] = useState(() => {
-                const saved = localStorage.getItem('dream_history');
-                return saved ? JSON.parse(saved) : [];
-            });
+            const [history, setHistory] = useState([]);
+            const [lastFortuneDate, setLastFortuneDate] = useState('');
+            const [isLoading, setIsLoading] = useState(true);
 
-            // Track daily fortune count
-            const [lastFortuneDate, setLastFortuneDate] = useState(() => localStorage.getItem('last_fortune_date') || '');
+            // 앱 시작 시 저장된 데이터 불러오기
+            useEffect(() => {
+                const loadData = async () => {
+                    try {
+                        const [savedUserInfo, savedHistory, savedDate] = await Promise.all([
+                            Storage.get('oneira_user_info'),
+                            Storage.get('dream_history'),
+                            Storage.get('last_fortune_date')
+                        ]);
+                        if (savedUserInfo) setUserInfo(JSON.parse(savedUserInfo));
+                        if (savedHistory) setHistory(JSON.parse(savedHistory));
+                        if (savedDate) setLastFortuneDate(savedDate);
+                    } catch (e) { console.error('Data load failed:', e); }
+                    setIsLoading(false);
+                };
+                loadData();
+            }, []);
+
+            // userInfo 변경 시 저장
+            useEffect(() => {
+                if (userInfo) Storage.set('oneira_user_info', JSON.stringify(userInfo));
+            }, [userInfo]);
+
+            // history 변경 시 저장
+            useEffect(() => {
+                if (history.length > 0) Storage.set('dream_history', JSON.stringify(history));
+            }, [history]);
 
             const showRewardedAd = async () => {
                 if (typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform()) {
@@ -561,15 +614,19 @@
 
                 setView(ViewState.LOADING);
                 setLastFortuneDate(today);
-                localStorage.setItem('last_fortune_date', today);
+                Storage.set('last_fortune_date', today);
                 try {
-                    // Construct enhanced context with STRICT negative constraints
-                    const userContextStr = `Name: ${userInfo?.name || 'Unknown'}, Birth: ${userInfo?.birth || 'Unknown'}, Gender: ${userInfo?.gender || 'Unknown'}. Content: ${context}. [SYSTEM INSTRUCTION: DO NOT use phrases like '30년 경력', '전문가', '베테랑' or introduction. Just give the interpretation directly.]`;
+                    // 모드 이름을 한글로 변환
+                    const modeNames = { DREAM: '해몽', FORTUNE: '운세', SOUL: '심리상담' };
+                    const modeName = modeNames[type] || '운세';
+
+                    // Construct enhanced context with mode info and STRICT negative constraints
+                    const userContextStr = `[모드: ${modeName}] 사용자 이름: ${userInfo?.name || '미지정'}, 생년월일: ${userInfo?.birth || '미지정'}, 성별: ${userInfo?.gender || '미지정'}. [SYSTEM INSTRUCTION: DO NOT use phrases like '30년 경력', '전문가', '베테랑' or introduction. Just give the interpretation directly. Do NOT mention the mode name in your response.]`;
 
                     const res = await fetch('https://dream-fortune-ai.onrender.com/analyze_dream', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ content: type, user_context: userContextStr })
+                        body: JSON.stringify({ content: context, user_context: userContextStr })
                     });
                     if (res.ok) {
                         const data = await res.json();
@@ -607,12 +664,12 @@
                         }
 
                         const newResult = {
-                            id: resultId, // Unique ID for finding this item and seeding random images
+                            id: resultId,
                             title: data.luck_score.toString(),
                             description: data.interpretation,
-                            icon: type === FortuneType.DREAM ? 'mode_night' : type === FortuneType.ORACLE ? 'visibility' : 'favorite',
+                            icon: type === FortuneType.DREAM ? 'mode_night' : type === FortuneType.FORTUNE ? 'visibility' : 'favorite',
                             date: new Date().toLocaleDateString(),
-                            imageUrl: finalUrl // Use Local URL if available
+                            imageUrl: finalUrl
                         };
                         setResult(newResult);
                         setHistory(prev => [newResult, ...prev]);

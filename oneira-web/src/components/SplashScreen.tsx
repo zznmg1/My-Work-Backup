@@ -54,6 +54,7 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
                 transition={{ duration: 1.5, ease: "easeOut" }}
                 style={{ marginBottom: '40px', textAlign: 'center' }}
             >
+                {/* REMOVED FOR v4.0: BLACK ONLY
                 <h1 style={{
                     fontSize: '3rem',
                     fontFamily: "'Playfair Display', serif",
@@ -71,6 +72,7 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
                 }}>
                     Reveal Your Fate
                 </p>
+                */}
             </motion.div>
 
             {/* Elegant Progress Bar */}
