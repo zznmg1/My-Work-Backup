@@ -43,15 +43,15 @@ export const LandingScreen: React.FC<Props> = ({ onNavigate }) => {
             <div className="flex flex-col items-center text-center space-y-8">
                 <h1 className="font-serif text-5xl md:text-6xl font-normal leading-tight tracking-[0.1em] text-white drop-shadow-xl">
                     2026<br />
-                    DAILY<br />
-                    FORTUNE
+                    매일<br />
+                    운명
                 </h1>
 
                 {/* Decorative Divider */}
                 <div className="w-px h-16 bg-gradient-to-b from-transparent via-primary/60 to-transparent" />
 
                 <p className="text-accent text-xs font-bold tracking-[0.3em] uppercase opacity-70">
-                    Mystic Fortune AI
+                    인공지능 운세 파트너
                 </p>
             </div>
 

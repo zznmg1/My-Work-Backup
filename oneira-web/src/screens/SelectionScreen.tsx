@@ -21,7 +21,7 @@ export const SelectionScreen: React.FC<Props> = ({ onNavigate, onSelectType }) =
                     <div className="w-8 h-8 flex items-center justify-center rounded-full bg-primary/10 text-primary ring-1 ring-primary/30">
                         <Sparkles className="w-4 h-4" />
                     </div>
-                    <h2 className="text-white text-xl font-serif font-bold tracking-tight">Oneira</h2>
+                    <h2 className="text-white text-xl font-serif font-bold tracking-tight">2026매일운명</h2>
                 </div>
                 <div className="flex items-center gap-4">
                     <button className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors">
@@ -37,10 +37,10 @@ export const SelectionScreen: React.FC<Props> = ({ onNavigate, onSelectType }) =
             <div className="flex-1 overflow-y-auto px-6 py-8">
                 <div className="flex flex-col mb-10 text-center">
                     <h1 className="text-3xl font-serif text-white leading-tight mb-2">
-                        Your Destiny <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-cosmic-purple">Awaits</span>
+                        당신의 운명을 <br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-cosmic-purple">확인하세요</span>
                     </h1>
-                    <p className="text-white/60 text-sm font-medium">Select a path to reveal your daily fortune.</p>
+                    <p className="text-white/60 text-sm font-medium">원하는 운세 카드를 선택해주세요.</p>
                 </div>
 
                 {/* Cards Container */}
@@ -48,8 +48,8 @@ export const SelectionScreen: React.FC<Props> = ({ onNavigate, onSelectType }) =
                     {/* Dream Card */}
                     <Card
                         color="purple"
-                        title="Dream"
-                        subtitle="III - THE MOON"
+                        title="해몽"
+                        subtitle="꿈의 해석"
                         icon={<Moon className="w-12 h-12 text-cosmic-purple" strokeWidth={1} />}
                         onClick={() => handleCardClick('DREAM')}
                     />
@@ -57,8 +57,8 @@ export const SelectionScreen: React.FC<Props> = ({ onNavigate, onSelectType }) =
                     {/* Oracle Card */}
                     <Card
                         color="cyan"
-                        title="Oracle"
-                        subtitle="I - THE MAGICIAN"
+                        title="운세"
+                        subtitle="오늘의 운세"
                         icon={<Eye className="w-12 h-12 text-cosmic-cyan" strokeWidth={1} />}
                         onClick={() => handleCardClick('ORACLE')}
                     />
@@ -66,8 +66,8 @@ export const SelectionScreen: React.FC<Props> = ({ onNavigate, onSelectType }) =
                     {/* Soul Card */}
                     <Card
                         color="pink"
-                        title="Soul"
-                        subtitle="VI - THE LOVERS"
+                        title="심리"
+                        subtitle="내면의 소리"
                         icon={<User className="w-12 h-12 text-cosmic-pink" strokeWidth={1} />}
                         onClick={() => handleCardClick('SOUL')}
                     />
