@@ -7,7 +7,7 @@ import { ResultScreen } from './screens/ResultScreen';
 import { HistoryScreen } from './screens/HistoryScreen';
 import { Screen, CardType, Fortune } from './types';
 
-import { AdMob, BannerAdSize, BannerAdPosition, RewardAdOptions, AdReward } from '@capacitor-community/admob';
+import { AdMob, BannerAdSize, BannerAdPosition, RewardAdOptions } from '@capacitor-community/admob';
 
 const REWARD_AD_ID = 'ca-app-pub-9625149267611159/5587558816';
 const BANNER_AD_ID = 'ca-app-pub-9625149267611159/8529318868';
@@ -79,7 +79,7 @@ export default function App() {
         try {
             console.log("Analyzing:", text);
             // Call API
-            const response = await fetch('http://127.0.0.1:8000/analyze_dream', {
+            const response = await fetch('https://dream-fortune-ai.onrender.com/analyze_dream', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -91,20 +91,22 @@ export default function App() {
             let luckScore = 0;
             let lottoNumbers: number[] = [];
             let resultText = "";
+            let imageUrl = "";
 
             if (response.ok) {
                 const data = await response.json();
                 resultText = data.interpretation;
                 luckScore = data.luck_score;
                 lottoNumbers = data.lotto_numbers;
+                imageUrl = data.image_url;
             } else {
                 console.error("API Error");
                 // Mock response matching the new 3-section format
                 let mockResult = `1. [한줄 요약]: 우주의 기운이 당신을 감싸고 있습니다. (AI 연결 실패, 데모 모드)\n\n2. [심층 분석]: 현재 AI 서버와 연결되지 않아 오프라인 점술가가 대신 답변합니다. 당신의 내면에는 무한한 가능성이 잠재되어 있으며, 곧 좋은 기회가 찾아올 것입니다.\n\n3. [조언]: 잠시 서버를 확인하고 다시 시도해보세요.`
 
-                if (selectedCard === CardType.ORACLE) mockResult = `1. [한줄 요약]: 금전운이 트이는 시기입니다. 💰\n\n2. [심층 분석]: 꿈속의 'FORTUNE'은 확실한 길조입니다. 막혔던 자금 흐름이 원활해지고 뜻밖의 수익을 기대할 수 있습니다.\n\n3. [조언]: 로또를 사거나 투자를 고려해보세요.`
-                else if (selectedCard === CardType.SOUL) mockResult = `1. [한줄 요약]: 내면의 평화를 찾을 때입니다. 🧘\n\n2. [심층 분석]: 혼란스러운 마음이 가라앉고 있습니다. 당신의 영혼은 지금 휴식을 원하고 있으며, 직관력이 높아지는 시기입니다.\n\n3. [조언]: 명상을 통해 머리를 비우세요.`
-                else if (selectedCard === CardType.DREAM) mockResult = `1. [한줄 요약]: 예지몽의 가능성이 있습니다. 🌙\n\n2. [심층 분석]: 당신의 꿈은 단순한 환상이 아니라 미래의 조각일 수 있습니다. 중요한 메시지가 숨겨져 있으니 기록해두는 것이 좋습니다.\n\n3. [조언]: 꿈 일기를 작성해보세요.`
+                if (selectedCard === 'ORACLE') mockResult = `1. [한줄 요약]: 금전운이 트이는 시기입니다. 💰\n\n2. [심층 분석]: 꿈속의 'FORTUNE'은 확실한 길조입니다. 막혔던 자금 흐름이 원활해지고 뜻밖의 수익을 기대할 수 있습니다.\n\n3. [조언]: 로또를 사거나 투자를 고려해보세요.`
+                else if (selectedCard === 'SOUL') mockResult = `1. [한줄 요약]: 내면의 평화를 찾을 때입니다. 🧘\n\n2. [심층 분석]: 혼란스러운 마음이 가라앉고 있습니다. 당신의 영혼은 지금 휴식을 원하고 있으며, 직관력이 높아지는 시기입니다.\n\n3. [조언]: 명상을 통해 머리를 비우세요.`
+                else if (selectedCard === 'DREAM') mockResult = `1. [한줄 요약]: 예지몽의 가능성이 있습니다. 🌙\n\n2. [심층 분석]: 당신의 꿈은 단순한 환상이 아니라 미래의 조각일 수 있습니다. 중요한 메시지가 숨겨져 있으니 기록해두는 것이 좋습니다.\n\n3. [조언]: 꿈 일기를 작성해보세요.`
 
                 resultText = mockResult;
                 luckScore = Math.floor(Math.random() * 100) + 1;
@@ -120,7 +122,8 @@ export default function App() {
                 type: 'Mystery',
                 icon: selectedCard === 'DREAM' ? 'Moon' : selectedCard === 'ORACLE' ? 'Eye' : 'Heart',
                 luckScore: luckScore,
-                lotto: lottoNumbers
+                lotto: lottoNumbers,
+                imageUrl: imageUrl || "https://picsum.photos/seed/mystic/400/600"
             };
 
             setCurrentFortune(newFortune);

@@ -17,6 +17,7 @@ export interface Fortune {
     lotto?: number[];
     summary?: string;
     advice?: string;
+    imageUrl?: string;
 }
 
 export type CardType = 'DREAM' | 'ORACLE' | 'SOUL';

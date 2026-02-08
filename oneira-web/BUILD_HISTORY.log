@@ -8,6 +8,12 @@
 | 2026-02-08 15:32 | 5047060 | 2026매일운명_v4.5_FINAL.apk | 앱 이름 변경 및 버그 최종 수정 (Icon, Ads, Images) |
 | 2026-02-08 15:40 | 5047060 | 2026매일운명_v4.5_FINAL.aab | 구글 플레이 스토어 출시용 App Bundle (Signed) |
 | 2026-02-08 15:43 | 5047060(+1) | 2026매일운명_v4.6_FINAL_VC4014.aab | 버전 코드 충돌 해결 (4013 -> 4014) |
+| 2026-02-08 16:21 | 40b5f84 | 2026매일운명_v4.7_FINAL_VC4015_KOREAN.aab | 한글화 복구 시도 (UI Structure Mismatch) |
+| 2026-02-08 17:42 | d5e695d | 2026매일운명_v4.8_GOLDEN_REAL_VC4016.aab | **Golden Version UI Restore** (zero_build.html) & Code 4016 |
+| 2026-02-08 17:48 | d5e695d | **DUAL BUILD**: APK(Test) & AAB(Store) | **KeyStore 검증 완료**. 동일 소스(v4.8)로 APK/AAB 동시 생성 |
+| 2026-02-08 18:00 | d5e695d* | **매일운명_v4.9_FINAL_VC4017** | **아이콘 복구(Crystal Ball)**, 앱 이름 '2026' 제거 완료 |
+| 2026-02-08 18:07 | d5e695d* | **매일운명_v4.9.1_REAL_FINAL** | **긴급 수정**: `logic.js` 내 "2026" 제거, 타이틀 수정, 아이콘 재확인 |
+| 2026-02-08 18:14 | d5e695d* | **매일운명_v4.9.2_ICON_FIXED** | **아이콘 강제 적용**: Adaptive Icon XML 제거 -> PNG 강제 사용 |
 
 ---
 *AI는 모든 빌드 성공 시 이 로그를 강제로 업데이트해야 합니다.*

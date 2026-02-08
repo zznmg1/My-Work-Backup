@@ -41,16 +41,29 @@ export const ResultScreen: React.FC<Props> = ({ onNavigate, result }) => {
                     </div>
                 </div>
 
-                {/* Visual Card (Image Generation Placeholder) */}
-                <div className="w-48 h-64 shrink-0 rounded-xl bg-gradient-to-b from-cosmic-deep to-black border border-white/10 shadow-[0_0_30px_rgba(139,92,246,0.3)] flex items-center justify-center relative group overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 via-transparent to-cosmic-cyan/20 opacity-50 group-hover:opacity-100 transition-opacity duration-700" />
+                {/* Visual Card (AI Generated Image) */}
+                <div className="w-64 h-80 shrink-0 rounded-xl bg-gradient-to-b from-cosmic-deep to-black border border-white/10 shadow-[0_0_30px_rgba(139,92,246,0.5)] flex items-center justify-center relative group overflow-hidden">
+                    {result.imageUrl ? (
+                        <div className="absolute inset-0 w-full h-full">
+                            <img
+                                src={result.imageUrl}
+                                alt="Destiny Visualization"
+                                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                                onLoad={(e) => (e.currentTarget.style.opacity = '1')}
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-at from-black via-transparent to-transparent opacity-40" />
+                        </div>
+                    ) : (
+                        <>
+                            <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 via-transparent to-cosmic-cyan/20 opacity-50 group-hover:opacity-100 transition-opacity duration-700" />
+                            <div className="relative z-10 text-center p-4">
+                                <Sparkles className="w-12 h-12 text-white/80 mx-auto mb-2 animate-pulse-slow" />
+                                <p className="text-xs text-white/50 tracking-widest uppercase">Astral Projection</p>
+                            </div>
+                        </>
+                    )}
 
-                    <div className="relative z-10 text-center p-4">
-                        <Sparkles className="w-12 h-12 text-white/80 mx-auto mb-2 animate-pulse-slow" />
-                        <p className="text-xs text-white/50 tracking-widest uppercase">Astral Projection</p>
-                    </div>
-
-                    <div className="absolute bottom-0 inset-x-0 bg-black/60 backdrop-blur-sm py-2 text-center border-t border-white/5">
+                    <div className="absolute bottom-0 inset-x-0 bg-black/60 backdrop-blur-sm py-2 text-center border-t border-white/5 z-20">
                         <span className="text-[10px] text-primary font-bold uppercase tracking-widest flex items-center justify-center gap-1">
                             <Zap className="w-3 h-3" /> AI Talisman
                         </span>

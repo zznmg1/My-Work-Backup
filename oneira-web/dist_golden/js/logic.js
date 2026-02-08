@@ -64,7 +64,7 @@ const LandingScreen = ({ onNavigate }) => (
             </div>
             <div className="p-5 glass-panel rounded-full"><Icons.Ghost className="w-6 h-6 text-white/50" /></div>
         </div>
-        <h1 className="text-6xl font-serif text-center font-thin leading-none mb-6">2026<br /><span className="text-4xl font-light opacity-80">Oracle</span></h1>
+        <h1 className="text-6xl font-serif text-center font-thin leading-none mb-6">DAILY<br /><span className="text-4xl font-light opacity-80">DESTINY</span></h1>
         <p className="text-accent text-xs tracking-[0.4em] uppercase opacity-60">Daily AI Fortune</p>
     </div>
 );
