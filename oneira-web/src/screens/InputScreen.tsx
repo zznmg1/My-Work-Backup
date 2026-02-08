@@ -7,13 +7,19 @@ interface Props {
     onSubmit: (content: string) => Promise<void>;
     isAnalyzing: boolean;
     selectedCard: CardType | null;
+    credits: number;
+    onWatchAd: () => Promise<boolean>;
+    onUseCredit: () => void;
 }
 
-export const InputScreen: React.FC<Props> = ({ onNavigate, onSubmit, isAnalyzing, selectedCard }) => {
+export const InputScreen: React.FC<Props> = ({
+    onNavigate, onSubmit, isAnalyzing, selectedCard, credits, onWatchAd, onUseCredit
+}) => {
     const [text, setText] = useState('');
 
     const handleSubmit = async () => {
-        if (!text.trim()) return;
+        if (!text.trim() || credits <= 0) return;
+        onUseCredit();
         await onSubmit(text);
     };
 
@@ -60,19 +66,29 @@ export const InputScreen: React.FC<Props> = ({ onNavigate, onSubmit, isAnalyzing
 
             {/* Footer Action */}
             <div className="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-background-dark via-background-dark to-transparent z-20">
-                <button
-                    onClick={handleSubmit}
-                    disabled={!text.trim() || isAnalyzing}
-                    className="relative w-full overflow-hidden rounded-full h-14 px-6 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white text-base font-bold tracking-[0.05em] shadow-[0_0_25px_rgba(255,0,132,0.25)] hover:shadow-[0_0_35px_rgba(255,0,132,0.4)] transition-all transform hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-3 group"
-                >
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
-                    {isAnalyzing ? (
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
+                {credits > 0 ? (
+                    <button
+                        onClick={handleSubmit}
+                        disabled={!text.trim() || isAnalyzing}
+                        className="relative w-full overflow-hidden rounded-full h-14 px-6 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white text-base font-bold tracking-[0.05em] shadow-[0_0_25px_rgba(255,0,132,0.25)] hover:shadow-[0_0_35px_rgba(255,0,132,0.4)] transition-all transform hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-3 group"
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+                        {isAnalyzing ? (
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                        ) : (
+                            <Sparkles className="w-5 h-5 animate-pulse" />
+                        )}
+                        <span>{isAnalyzing ? "INTERPRETING..." : `INTERPRET (Remaining: ${credits})`}</span>
+                    </button>
+                ) : (
+                    <button
+                        onClick={onWatchAd}
+                        className="relative w-full overflow-hidden rounded-full h-14 px-6 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-base font-bold tracking-[0.05em] shadow-[0_0_25px_rgba(139,92,246,0.25)] transition-all transform hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-3 group"
+                    >
                         <Sparkles className="w-5 h-5 animate-pulse" />
-                    )}
-                    <span>{isAnalyzing ? "INTERPRETING..." : "INTERPRET"}</span>
-                </button>
+                        <span>WATCH AD FOR +1 CREDIT</span>
+                    </button>
+                )}
             </div>
         </div>
     );
