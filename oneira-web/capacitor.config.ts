@@ -3,7 +3,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 const config: CapacitorConfig = {
   appId: 'com.dreamfortune.ai',
   appName: '2026 매일 운세',
-  webDir: 'dist'
+  webDir: 'dist_golden'
 };
 
 export default config;

@@ -1,0 +1,107 @@
+/* 
+   VERSION: v2.0 (Premium Design Restore)
+   TYPE: DESIGN CODE (CX)
+   DESCRIPTION: Glassmorphism, Animations, Tenor Sans Typography
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Tenor+Sans&display=swap');
+
+:root {
+    --color-bg: #050510;
+    --color-primary: #ff0084;
+    --color-cosmic-purple: #8b5cf6;
+    --color-cosmic-cyan: #06b6d4;
+    --color-card-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+body {
+    background-color: var(--color-bg);
+    color: white;
+    margin: 0;
+    font-family: 'Manrope', sans-serif;
+    overflow-x: hidden;
+}
+
+/* --- TYPOGRAPHY --- */
+.font-serif {
+    font-family: 'Tenor Sans', serif;
+}
+.font-sans {
+    font-family: 'Manrope', sans-serif;
+}
+
+/* --- ANIMATIONS --- */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulseSlow { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+@keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+@keyframes spinSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.animate-fade-in { animation: fadeIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+.animate-pulse-slow { animation: pulseSlow 4s ease-in-out infinite; }
+.animate-float { animation: float 6s ease-in-out infinite; }
+.animate-spin-slow { animation: spinSlow 12s linear infinite; }
+
+/* --- GLASSMORPHISM UI --- */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.glass-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    transition: all 0.3s ease;
+}
+.glass-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 15px rgba(255, 0, 132, 0.3);
+    transform: translateY(-2px);
+}
+
+/* --- COMPONENTS --- */
+.splash-text {
+    font-size: 3rem;
+    letter-spacing: 5px;
+    background: linear-gradient(to right, #fff, #ce8dae);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.card-selection {
+    transition: all 0.4s ease;
+}
+.card-selection:hover {
+    transform: translateY(-5px) scale(1.02);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.2);
+}
+
+/* --- IMAGE DISPLAY --- */
+.image-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1rem;
+    box-shadow: 0 0 40px rgba(139, 92, 246, 0.3);
+    transition: all 0.5s ease;
+}
+.image-container:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 60px rgba(139, 92, 246, 0.5);
+}
+.img-placeholder {
+    background: linear-gradient(135deg, #1a0b12 0%, #050510 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #050205; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #ff0084; }
