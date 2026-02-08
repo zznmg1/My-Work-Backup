@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">2026 매일 운세</string>
     <string name="title_activity_main">2026 매일 운세</string>
-    <string name="package_name">com.oneira.fortune</string>
-    <string name="custom_url_scheme">com.oneira.fortune</string>
+    <string name="package_name">com.dreamfortune.ai</string>
+    <string name="custom_url_scheme">com.dreamfortune.ai</string>
 </resources>

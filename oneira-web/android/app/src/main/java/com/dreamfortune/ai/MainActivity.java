@@ -1,4 +1,4 @@
-package com.oneira.fortune;
+package com.dreamfortune.ai;
 
 import com.getcapacitor.BridgeActivity;
 
